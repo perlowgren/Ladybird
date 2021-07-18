@@ -92,6 +92,7 @@ nb-configuration.xml
 
 ## Gradle
 
+/gradle/wrapper/gradle-wrapper.properties
 /local.properties
 .gradle/
 gradle-app.setting
