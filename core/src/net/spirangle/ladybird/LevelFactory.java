@@ -1,6 +1,7 @@
 package net.spirangle.ladybird;
 
 import static net.spirangle.ladybird.GameObject.*;
+import static net.spirangle.ladybird.GameObject.Effect.*;
 
 import com.badlogic.gdx.Gdx;
 import com.eclipsesource.json.JsonObject;
@@ -16,13 +17,6 @@ public class LevelFactory {
     public static final int CREATURE           = 2;
     public static final int PLAYER             = 3;
     public static final int PROJECTILE         = 4;
-
-    public static final int LIFE               = 1;
-    public static final int AMMO               = 2;
-    public static final int POWER              = 3;
-    public static final int SPEED              = 4;
-    public static final int GOLD               = 5;
-    public static final int EXIT               = 6;
 
     public enum GameObjectTemplate {
         HFLAT(0,0,0,2,"T1"),
@@ -89,24 +83,24 @@ public class LevelFactory {
     }
 
     public enum CreatureTemplate {
-        C1(0,0,0,0,2,AGGRO,"standing, facing right"),
-        C2(0,0,0,0,2,AGGRO|FLIP,"standing, facing left"),
-        CL1(LEFT,1,0,0,2,AGGRO|MOBILE|FLIP,"move left, facing left"),
-        CR1(RIGHT,1,0,0,2,AGGRO|MOBILE,"move right, facing right"),
-        CU1(UP,1,0,0,2,AGGRO|MOBILE,"move up, facing right"),
-        CU2(UP,1,0,0,2,AGGRO|MOBILE|FLIP,"move up, facing left"),
-        CD1(DOWN,1,0,0,2,AGGRO|MOBILE,"move down, facing right"),
-        CD2(DOWN,1,0,0,2,AGGRO|MOBILE|FLIP,"move down, facing left");
+        C1(0,0,null,0,2,AGGRO,"standing, facing right"),
+        C2(0,0,null,0,2,AGGRO|FLIP,"standing, facing left"),
+        CL1(LEFT,1,null,0,2,AGGRO|MOBILE|FLIP,"move left, facing left"),
+        CR1(RIGHT,1,null,0,2,AGGRO|MOBILE,"move right, facing right"),
+        CU1(UP,1,null,0,2,AGGRO|MOBILE,"move up, facing right"),
+        CU2(UP,1,null,0,2,AGGRO|MOBILE|FLIP,"move up, facing left"),
+        CD1(DOWN,1,null,0,2,AGGRO|MOBILE,"move down, facing right"),
+        CD2(DOWN,1,null,0,2,AGGRO|MOBILE|FLIP,"move down, facing left");
 
         public int action;
         public int speed;
-        public int effect;
+        public Effect effect;
         public int value;
         public int life;
         public int stat;
         public String descr;
 
-        CreatureTemplate(int action,int speed,int effect,int value,int life,int stat,String descr) {
+        CreatureTemplate(int action,int speed,Effect effect,int value,int life,int stat,String descr) {
             this.action = action;
             this.speed = speed;
             this.effect = effect;
@@ -126,13 +120,13 @@ public class LevelFactory {
 
         public int action;
         public int speed;
-        public int effect;
+        public Effect effect;
         public int value;
         public int life;
         public int stat;
         public String descr;
 
-        ItemTemplate(int action,int speed,int effect,int value,int life,int stat,String descr) {
+        ItemTemplate(int action,int speed,Effect effect,int value,int life,int stat,String descr) {
             this.action = action;
             this.speed = speed;
             this.effect = effect;
@@ -144,22 +138,22 @@ public class LevelFactory {
     }
 
     public enum TileTemplate {
-        T1(0,0,0,0,0,SOLID,"solid"),
-        TL1(LEFT,1,0,0,0,SOLID|MOBILE,"solid, move left"),
-        TR1(RIGHT,1,0,0,0,SOLID|MOBILE,"solid, move right"),
-        TU1(UP,1,0,0,0,SOLID|MOBILE,"solid, move up"),
-        TD1(DOWN,1,0,0,0,SOLID|MOBILE,"solid, move down"),
+        T1(0,0,null,0,0,SOLID,"solid"),
+        TL1(LEFT,1,null,0,0,SOLID|MOBILE,"solid, move left"),
+        TR1(RIGHT,1,null,0,0,SOLID|MOBILE,"solid, move right"),
+        TU1(UP,1,null,0,0,SOLID|MOBILE,"solid, move up"),
+        TD1(DOWN,1,null,0,0,SOLID|MOBILE,"solid, move down"),
         TE1(0,0,EXIT,0,0,BUFF,"buff: level exit");
 
         public int action;
         public int speed;
-        public int effect;
+        public Effect effect;
         public int value;
         public int life;
         public int stat;
         public String descr;
 
-        TileTemplate(int action,int speed,int effect,int value,int life,int stat,String descr) {
+        TileTemplate(int action,int speed,Effect effect,int value,int life,int stat,String descr) {
             this.action = action;
             this.speed = speed;
             this.effect = effect;

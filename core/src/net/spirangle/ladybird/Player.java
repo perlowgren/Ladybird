@@ -2,12 +2,10 @@ package net.spirangle.ladybird;
 
 import static net.spirangle.ladybird.GameScreen.LAYERS;
 import static net.spirangle.ladybird.LadybirdGame.*;
-import static net.spirangle.ladybird.Level.NEXT_LEVEL;
-import static net.spirangle.ladybird.Level.START_GAME;
-import static net.spirangle.ladybird.LevelFactory.*;
+import static net.spirangle.ladybird.Level.Action.START_GAME;
 import static net.spirangle.ladybird.LevelFactory.GameObjectTemplate.APPLE;
 
-import net.spirangle.ladybird.LevelFactory.*;
+import net.spirangle.ladybird.LevelFactory.PlayerTemplate;
 import net.spirangle.minerva.Rectangle;
 import net.spirangle.minerva.gdx.GameBase;
 
@@ -230,54 +228,8 @@ public class Player extends Creature {
                 }
 
             for(GameObject o : objList)
-                if(o.effect!=0)
-                    switch(o.effect) {
-                        default:
-                            break;
-
-                        case LIFE:
-                            if(life<10) life += o.value;
-                            o.delete();
-                            break;
-
-                        case AMMO:
-                            ammo += o.value;
-                            o.delete();
-                            break;
-
-                        case GOLD:
-                            chests += o.value;
-                            o.delete();
-                            break;
-
-                        case POWER:
-                            power += o.value;
-                            if(power<0) power = 0;
-                            o.delete();
-                            ++buffs[2];
-                            break;
-
-                        case SPEED:
-                            speed += o.value;
-                            if(speed<1) speed = 1;
-                            o.delete();
-                            ++buffs[1];
-                            break;
-
-                        case EXIT:
-                            if(chests>=collect) {
-                                String nextLevelId = o.getParam("level");
-                                if(nextLevelId==null) nextLevelId = game.getLevel().getNextLevelId();
-                                if(nextLevelId!=null) {
-                                    setPassive(true);
-                                    level.removeObject(this);
-                                    game.playSound(SOUND_DOOR);
-                                    game.setNextLevelId(nextLevelId);
-                                    game.setAction(NEXT_LEVEL,12);
-                                }
-                            }
-                            break;
-                    }
+                if(o.effect!=null)
+                    o.effect.activate(this,o);
         }
 
         // Cannot move outside level border, to left and right:
@@ -295,7 +247,7 @@ public class Player extends Creature {
         else  n = 0;
         image.setAnimation(animationIndexByType[n][type],this);
 
-        if(isJumping() || !isWalking() || isPassive()) {
+        if(isNotWalking()) {
             if(footsteps) {
                 game.stopSound(SOUND_FOOTSTEPS);
                 footsteps = false;
@@ -328,7 +280,7 @@ public class Player extends Creature {
         int x = solid.x+solid.width/2;
         int y = solid.y+solid.height/2;
         Projectile p = new Projectile(level,x,y,LAYERS-1,APPLE.index,this);
-        p.setData(0,3,0,1,0,MOVING|(flip? FLIP : 0));
+        p.setData(0,3,null,1,0,MOVING|(flip? FLIP : 0));
         p.jump = 1;
         level.addObject(p);
         --ammo;

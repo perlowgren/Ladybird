@@ -1,7 +1,7 @@
 package net.spirangle.ladybird;
 
-import static net.spirangle.ladybird.GameScreen.SPLASH_START;
-import static net.spirangle.ladybird.Level.*;
+import static net.spirangle.ladybird.GameScreen.SplashScreenType.START;
+import static net.spirangle.ladybird.Level.Action;
 import static net.spirangle.ladybird.LevelFactory.GameObjectTemplate.TROLL;
 
 import com.badlogic.gdx.Gdx;
@@ -79,12 +79,14 @@ public class LadybirdGame extends GameBase {
     private Sprite[] sprites;
     private GameImage[] images;
 
-    private int action = 0;
-    private int actionTimer = 0;
+    private Action action;
+    private int actionTimer;
 
     public LadybirdGame() {
         super();
         instance = this;
+        action = null;
+        actionTimer = 0;
     }
 
     @Override
@@ -210,7 +212,7 @@ public class LadybirdGame extends GameBase {
                 public void handleHttpResponse(HttpResponse httpResponse) {
                     String response = httpResponse.getResultAsString();
                     levels = com.eclipsesource.json.Json.parse(response).asObject();
-                    screen.showSplash(SPLASH_START,20,str.get("appName"));
+                    screen.showSplash(START,20,str.get("appName"));
                 }
 
                 @Override
@@ -224,7 +226,7 @@ public class LadybirdGame extends GameBase {
         } else {
             FileHandle file = Gdx.files.internal("levels.json");
             levels = com.eclipsesource.json.Json.parse(file.readString("UTF-8")).asObject();
-            screen.showSplash(SPLASH_START,20,str.get("appName"));
+            screen.showSplash(START,20,str.get("appName"));
         }
     }
 
@@ -255,25 +257,25 @@ public class LadybirdGame extends GameBase {
             if(!"start".equals(levelId)) text = str.get("level."+levelId);
             else if(screen.getRound()==0) text = str.get("start");
             else text = str.format("round",screen.getRound()+1);
-            showMessage(text,20,0);
+            showMessage(text,20,null);
         } else {
             screen.endRound();
         }
     }
 
-    public void showMessage(String text,int timer,int action) {
+    public void showMessage(String text,int timer,Action action) {
         screen.showMessage(null,text,timer,action,true);
     }
 
-    public void setAction(int action,int timer) {
+    public void setAction(Action action,int timer) {
         this.action = action;
         this.actionTimer = timer;
     }
 
     public void handleAction() {
-        if(action!=0 && (--actionTimer)<=0) {
-            int a = action;
-            action = 0;
+        if(action!=null && (--actionTimer)<=0) {
+            Action a = action;
+            action = null;
             actionTimer = 0;
             switch(a) {
                 case START_GAME:

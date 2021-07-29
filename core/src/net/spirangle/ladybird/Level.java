@@ -16,9 +16,11 @@ import java.util.Set;
 
 public class Level {
 
-    public static final int START_GAME         = 1;
-    public static final int NEXT_LEVEL         = 2;
-    public static final int NEXT_ROUND         = 3;
+    public enum Action {
+        START_GAME,
+        NEXT_LEVEL,
+        NEXT_ROUND;
+    }
 
     private final GameScreen screen;
     private final Color bgcolor;

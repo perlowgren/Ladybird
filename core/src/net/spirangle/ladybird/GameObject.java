@@ -1,6 +1,8 @@
 package net.spirangle.ladybird;
 
 import static net.spirangle.ladybird.GameScreen.GRID;
+import static net.spirangle.ladybird.LadybirdGame.*;
+import static net.spirangle.ladybird.Level.Action.NEXT_LEVEL;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -11,6 +13,7 @@ import net.spirangle.minerva.Rectangle;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 public abstract class GameObject extends Anim {
 
@@ -59,6 +62,60 @@ public abstract class GameObject extends Anim {
     public static final int UP                 = 0x00004000;
     public static final int DOWN               = 0x00008000;
 
+    public enum Effect {
+        LIFE(true,(p,o) -> {
+            if(p.life<10) p.life += o.value;
+            LadybirdGame.getInstance().playSound(SOUND_HEART);
+        }),
+        AMMO(true,(p,o) -> {
+            p.ammo += o.value;
+            LadybirdGame.getInstance().playSound(SOUND_APPLE);
+        }),
+        POWER(true,(p,o) -> {
+            p.power += o.value;
+            if(p.power<0) p.power = 0;
+            ++p.buffs[2];
+            LadybirdGame.getInstance().playSound(SOUND_POTION);
+        }),
+        SPEED(true,(p,o) -> {
+            p.speed += o.value;
+            if(p.speed<1) p.speed = 1;
+            ++p.buffs[1];
+            LadybirdGame.getInstance().playSound(SOUND_POTION);
+        }),
+        GOLD(true,(p,o) -> {
+            p.chests += o.value;
+            LadybirdGame.getInstance().playSound(SOUND_CHEST);
+        }),
+        EXIT(false,(p,o) -> {
+            if(p.chests>=p.collect) {
+                LadybirdGame game = LadybirdGame.getInstance();
+                String nextLevelId = o.getParam("level");
+                if(nextLevelId==null) nextLevelId = game.getLevel().getNextLevelId();
+                if(nextLevelId!=null) {
+                    p.setPassive(true);
+                    p.level.removeObject(p);
+                    game.playSound(SOUND_DOOR);
+                    game.setNextLevelId(nextLevelId);
+                    game.setAction(NEXT_LEVEL,12);
+                }
+            }
+        });
+
+        private final boolean consume;
+        private final BiConsumer<Player,GameObject> effect;
+
+        Effect(boolean consume,BiConsumer<Player,GameObject> effect) {
+            this.consume = consume;
+            this.effect = effect;
+        }
+
+        public void activate(Player player,GameObject object) {
+            effect.accept(player,object);
+            if(consume) object.delete();
+        }
+    }
+
     protected Level level;
     protected int x;
     protected int y;
@@ -68,7 +125,7 @@ public abstract class GameObject extends Anim {
     protected int action;
     protected int life;
     protected int jump;
-    protected int effect;
+    protected Effect effect;
     protected int value;
     protected int stat;
     protected Map<String,String> params;
@@ -170,6 +227,10 @@ public abstract class GameObject extends Anim {
 
     public final boolean isWalking() {
         return (stat&WALK)!=0;
+    }
+
+    public final boolean isNotWalking() {
+        return (stat&WALK)==0 || (stat&(DEAD|PASSIVE|JUMP))!=0;
     }
 
     public final void setJumping(boolean jumping) {
@@ -407,7 +468,7 @@ public abstract class GameObject extends Anim {
         level.deleteObject(this);
     }
 
-    public void setData(int action,int speed,int effect,int value,int life,int stat) {
+    public void setData(int action,int speed,Effect effect,int value,int life,int stat) {
         this.action = action;
         this.speed = speed;
         this.effect = effect;
