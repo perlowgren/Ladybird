@@ -1,5 +1,7 @@
 package net.spirangle.ladybird;
 
+import static net.spirangle.ladybird.GameObject.*;
+
 import com.badlogic.gdx.Gdx;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
@@ -59,9 +61,9 @@ public class LevelFactory {
     }
 
     public enum PlayerTemplate {
-        P1(0,2,6,0,0,5,0,GameObject.MOVING,"first level"),
-        P2(0,2,6,0,0,0,0,GameObject.MOVING,"facing right"),
-        P3(0,2,6,0,0,0,0,GameObject.MOVING|GameObject.FLIP,"facing left");
+        P1(0,2,6,0,0,5,0,MOVING,"first level"),
+        P2(0,2,6,0,0,0,0,MOVING,"facing right"),
+        P3(0,2,6,0,0,0,0,MOVING|FLIP,"facing left");
 
         public int action;
         public int speed;
@@ -87,14 +89,14 @@ public class LevelFactory {
     }
 
     public enum CreatureTemplate {
-        C1(0,0,0,0,2,GameObject.AGGRO,"standing, facing right"),
-        C2(0,0,0,0,2,GameObject.AGGRO|GameObject.FLIP,"standing, facing left"),
-        CL1(GameObject.LEFT,1,0,0,2,GameObject.AGGRO|GameObject.MOBILE|GameObject.FLIP,"move left, facing left"),
-        CR1(GameObject.RIGHT,1,0,0,2,GameObject.AGGRO|GameObject.MOBILE,"move right, facing right"),
-        CU1(GameObject.UP,1,0,0,2,GameObject.AGGRO|GameObject.MOBILE,"move up, facing right"),
-        CU2(GameObject.UP,1,0,0,2,GameObject.AGGRO|GameObject.MOBILE|GameObject.FLIP,"move up, facing left"),
-        CD1(GameObject.DOWN,1,0,0,2,GameObject.AGGRO|GameObject.MOBILE,"move down, facing right"),
-        CD2(GameObject.DOWN,1,0,0,2,GameObject.AGGRO|GameObject.MOBILE|GameObject.FLIP,"move down, facing left");
+        C1(0,0,0,0,2,AGGRO,"standing, facing right"),
+        C2(0,0,0,0,2,AGGRO|FLIP,"standing, facing left"),
+        CL1(LEFT,1,0,0,2,AGGRO|MOBILE|FLIP,"move left, facing left"),
+        CR1(RIGHT,1,0,0,2,AGGRO|MOBILE,"move right, facing right"),
+        CU1(UP,1,0,0,2,AGGRO|MOBILE,"move up, facing right"),
+        CU2(UP,1,0,0,2,AGGRO|MOBILE|FLIP,"move up, facing left"),
+        CD1(DOWN,1,0,0,2,AGGRO|MOBILE,"move down, facing right"),
+        CD2(DOWN,1,0,0,2,AGGRO|MOBILE|FLIP,"move down, facing left");
 
         public int action;
         public int speed;
@@ -116,11 +118,11 @@ public class LevelFactory {
     }
 
     public enum ItemTemplate {
-        IG1(0,0,GOLD,1,0,GameObject.BUFF,"buff: gold"),
-        BL1(0,0,LIFE,1,0,GameObject.BUFF,"buff: life"),
-        BA1(0,0,AMMO,5,0,GameObject.BUFF,"buff: ammo"),
-        BP1(0,0,POWER,1,0,GameObject.BUFF,"buff: power"),
-        BS1(0,0,SPEED,1,0,GameObject.BUFF,"buff: speed");
+        IG1(0,0,GOLD,1,0,BUFF,"buff: gold"),
+        BL1(0,0,LIFE,1,0,BUFF,"buff: life"),
+        BA1(0,0,AMMO,5,0,BUFF,"buff: ammo"),
+        BP1(0,0,POWER,1,0,BUFF,"buff: power"),
+        BS1(0,0,SPEED,1,0,BUFF,"buff: speed");
 
         public int action;
         public int speed;
@@ -142,12 +144,12 @@ public class LevelFactory {
     }
 
     public enum TileTemplate {
-        T1(0,0,0,0,0,GameObject.SOLID,"solid"),
-        TL1(GameObject.LEFT,1,0,0,0,GameObject.SOLID|GameObject.MOBILE,"solid, move left"),
-        TR1(GameObject.RIGHT,1,0,0,0,GameObject.SOLID|GameObject.MOBILE,"solid, move right"),
-        TU1(GameObject.UP,1,0,0,0,GameObject.SOLID|GameObject.MOBILE,"solid, move up"),
-        TD1(GameObject.DOWN,1,0,0,0,GameObject.SOLID|GameObject.MOBILE,"solid, move down"),
-        TE1(0,0,EXIT,0,0,GameObject.BUFF,"buff: level exit");
+        T1(0,0,0,0,0,SOLID,"solid"),
+        TL1(LEFT,1,0,0,0,SOLID|MOBILE,"solid, move left"),
+        TR1(RIGHT,1,0,0,0,SOLID|MOBILE,"solid, move right"),
+        TU1(UP,1,0,0,0,SOLID|MOBILE,"solid, move up"),
+        TD1(DOWN,1,0,0,0,SOLID|MOBILE,"solid, move down"),
+        TE1(0,0,EXIT,0,0,BUFF,"buff: level exit");
 
         public int action;
         public int speed;

@@ -210,7 +210,7 @@ public abstract class GameObject extends Anim {
         --life;
         if(life>0) return 1;
         stat |= DEAD;
-        z = GameScreen.LAYERS-1;
+        z = LAYERS-1;
         if(jmp>=-1) jump = jmp;
         return 2;
     }
@@ -318,7 +318,7 @@ public abstract class GameObject extends Anim {
 
     public void move(int x,int y,boolean g) {
         if(x==0 && y==0) return;
-        if(g && (x==0 || this.x/GameScreen.GRID==(this.x+x)/GameScreen.GRID) && (y==0 || this.y/GameScreen.GRID==(this.y+y)/GameScreen.GRID)) g = false;
+        if(g && (x==0 || this.x/GRID==(this.x+x)/GRID) && (y==0 || this.y/GRID==(this.y+y)/GRID)) g = false;
         if(g) level.removeObject(this);
         setPosition(this.x+x,this.y+y);
         if(g) level.putObject(this);
@@ -326,7 +326,7 @@ public abstract class GameObject extends Anim {
 
     public void transport(int x,int y,int z,boolean g) {
         if(x==this.x && y==this.y && z==this.z) return;
-        if(g && (x==0 || this.x/GameScreen.GRID==x/GameScreen.GRID) && (y==0 || this.y/GameScreen.GRID==y/GameScreen.GRID)) g = false;
+        if(g && (x==0 || this.x/GRID==x/GRID) && (y==0 || this.y/GRID==y/GRID)) g = false;
         if(g) level.removeObject(this);
         setPosition(x,y);
         this.z = z;

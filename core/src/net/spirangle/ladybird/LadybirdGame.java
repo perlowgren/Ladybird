@@ -1,5 +1,7 @@
 package net.spirangle.ladybird;
 
+import static net.spirangle.ladybird.GameScreen.SPLASH_START;
+import static net.spirangle.ladybird.Level.*;
 import static net.spirangle.ladybird.LevelFactory.GameObjectTemplate.TROLL;
 
 import com.badlogic.gdx.Gdx;
@@ -24,6 +26,29 @@ public class LadybirdGame extends GameBase {
     public static final String APP_NAME        = "ladybird";
     public static final String APP_TITLE       = "Ladybird's Gift";
     public static final String HOST_URL        = "https://ladybird.spirangle.net";
+
+    public static final int FONT_PROFONT12B    = 0;
+    public static final int FONT_PROFONT12W    = 1;
+    public static final int FONT_RISQUE14      = 2;
+    public static final int FONT_RISQUE18      = 3;
+
+    public static final int TEXTURE_SPLASH     = 0;
+    public static final int TEXTURE_GUI        = 1;
+    public static final int TEXTURE_TILES      = 2;
+    public static final int TEXTURE_ITEMS      = 3;
+    public static final int TEXTURE_CREATURES  = 4;
+    public static final int TEXTURE_TROLL      = 5;
+
+    public static final int SOUND_APPEAR       = 0;
+    public static final int SOUND_FOOTSTEPS    = 1;
+    public static final int SOUND_JUMP         = 2;
+    public static final int SOUND_THROW        = 3;
+    public static final int SOUND_TROLL_HIT    = 4;
+    public static final int SOUND_CREATURE_HIT = 5;
+    public static final int SOUND_DOOR         = 6;
+
+    public static final int MUSIC_NONE         = -1;
+    public static final int MUSIC_SUNNY_DAY    = 0;
 
     public static class HiScore {
         public String name;
@@ -61,24 +86,24 @@ public class LadybirdGame extends GameBase {
     public void create() {
         String splashTexture = "images/splash.png";
         String guiTexture = "images/gui.png";
-        addAsset(GameScreen.TEXTURE_SPLASH,splashTexture,AssetFileType.TEXTURE);
-        addAsset(GameScreen.TEXTURE_GUI,guiTexture,AssetFileType.TEXTURE);
-        addAsset(GameScreen.TEXTURE_TILES,"images/tiles.png",AssetFileType.TEXTURE);
-        addAsset(GameScreen.TEXTURE_ITEMS,"images/items.png",AssetFileType.TEXTURE);
-        addAsset(GameScreen.TEXTURE_CREATURES,"images/creatures.png",AssetFileType.TEXTURE);
-        addAsset(GameScreen.TEXTURE_TROLL,"images/troll.png",AssetFileType.TEXTURE);
-        addAsset(GameScreen.FONT_PROFONT12B,"fonts/profont12b.fnt",AssetFileType.BITMAP_FONT);
-        addAsset(GameScreen.FONT_PROFONT12W,"fonts/profont12w.fnt",AssetFileType.BITMAP_FONT);
-        addAsset(GameScreen.FONT_RISQUE14,"fonts/risque14.fnt",AssetFileType.BITMAP_FONT);
-        addAsset(GameScreen.FONT_RISQUE18,"fonts/risque18.fnt",AssetFileType.BITMAP_FONT);
-        addAsset(GameScreen.SOUND_APPEAR,"audio/Appear.ogg",AssetFileType.SOUND);
-        addAsset(GameScreen.SOUND_FOOTSTEPS,"audio/Footsteps.ogg",AssetFileType.SOUND);
-        addAsset(GameScreen.SOUND_JUMP,"audio/Jump.ogg",AssetFileType.SOUND);
-        addAsset(GameScreen.SOUND_THROW,"audio/Throw.ogg",AssetFileType.SOUND);
-        addAsset(GameScreen.SOUND_TROLL_HIT,"audio/TrollHit.ogg",AssetFileType.SOUND);
-        addAsset(GameScreen.SOUND_CREATURE_HIT,"audio/CreatureHit.ogg",AssetFileType.SOUND);
-        addAsset(GameScreen.SOUND_DOOR,"audio/Door.ogg",AssetFileType.SOUND);
-        addAsset(GameScreen.MUSIC_SUNNY_DAY,"SunnyDay","audio/Sunny_Day.ogg",AssetFileType.MUSIC);
+        addAsset(TEXTURE_SPLASH,splashTexture,AssetFileType.TEXTURE);
+        addAsset(TEXTURE_GUI,guiTexture,AssetFileType.TEXTURE);
+        addAsset(TEXTURE_TILES,"images/tiles.png",AssetFileType.TEXTURE);
+        addAsset(TEXTURE_ITEMS,"images/items.png",AssetFileType.TEXTURE);
+        addAsset(TEXTURE_CREATURES,"images/creatures.png",AssetFileType.TEXTURE);
+        addAsset(TEXTURE_TROLL,"images/troll.png",AssetFileType.TEXTURE);
+        addAsset(FONT_PROFONT12B,"fonts/profont12b.fnt",AssetFileType.BITMAP_FONT);
+        addAsset(FONT_PROFONT12W,"fonts/profont12w.fnt",AssetFileType.BITMAP_FONT);
+        addAsset(FONT_RISQUE14,"fonts/risque14.fnt",AssetFileType.BITMAP_FONT);
+        addAsset(FONT_RISQUE18,"fonts/risque18.fnt",AssetFileType.BITMAP_FONT);
+        addAsset(SOUND_APPEAR,"audio/Appear.ogg",AssetFileType.SOUND);
+        addAsset(SOUND_FOOTSTEPS,"audio/Footsteps.ogg",AssetFileType.SOUND);
+        addAsset(SOUND_JUMP,"audio/Jump.ogg",AssetFileType.SOUND);
+        addAsset(SOUND_THROW,"audio/Throw.ogg",AssetFileType.SOUND);
+        addAsset(SOUND_TROLL_HIT,"audio/TrollHit.ogg",AssetFileType.SOUND);
+        addAsset(SOUND_CREATURE_HIT,"audio/CreatureHit.ogg",AssetFileType.SOUND);
+        addAsset(SOUND_DOOR,"audio/Door.ogg",AssetFileType.SOUND);
+        addAsset(MUSIC_SUNNY_DAY,"SunnyDay","audio/Sunny_Day.ogg",AssetFileType.MUSIC);
         addAsset(-1,"i18n/ladybird",AssetFileType.I18BUNDLE);
 
         super.create();
@@ -93,7 +118,7 @@ public class LadybirdGame extends GameBase {
         super.loadingAssetsCompleted();
 
         images = new GameImage[]{
-            new GameImage(getTexture(GameScreen.TEXTURE_TILES),new int[] {
+            new GameImage(getTexture(TEXTURE_TILES),new int[] {
                 /* tm    x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
                 100,  0, 25, 25,  5,  0,  0,  0,  0,  0,  0,  0,  0,  // 0. Horizontal Flat
                 100,  0,  0,  5, 25,  0,  0,  0,  0,  0,  0,  0,  0,  // 1. Vertical Flat
@@ -105,7 +130,7 @@ public class LadybirdGame extends GameBase {
                 100,  5,  0, 20, 25,  0,  0,  0,  0, 10, 25,  0,  0,  // 6. Door
             },new int[]{ 0,1,2,3,4,5,6,7, }),
 
-            new GameImage(getTexture(GameScreen.TEXTURE_ITEMS),new int[] {
+            new GameImage(getTexture(TEXTURE_ITEMS),new int[] {
                 /* tm    x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
                 100,  1,  1, 10, 10,  0,  0,  0,  0,  0,  0,  0,  0,  // 0. Heart
                 100, 12,  1, 10, 10,  0,  0,  0,  0,  0,  0,  0,  0,  // 1. Apple
@@ -116,7 +141,7 @@ public class LadybirdGame extends GameBase {
                 100, 34, 12, 10, 10,  0,  0,  0,  0,  0,  0,  0,  0,  // 2. Bottle Blue
             },new int[] { 0,1,2,3,4,5,6, }),
 
-            new GameImage(getTexture(GameScreen.TEXTURE_CREATURES),new int[]{
+            new GameImage(getTexture(TEXTURE_CREATURES),new int[]{
                 /* tm    x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
                 100,  1,  1, 20, 20, 10, 20,  1,  4, 18, 12, 22,  0,  // 0. Boogie - Stand
                 1, 45,  1, 20, 20, 10, 20,  1,  4, 18, 12, 22,  0,  // 1. Boogie - Walk
@@ -126,7 +151,7 @@ public class LadybirdGame extends GameBase {
                 1,  1, 23, 15, 20,  8, 20,  0,  0,  0,  0, 17,  0,
             },new int[]{ 0,1,3,4, }),
 
-            new GameImage(getTexture(GameScreen.TEXTURE_TROLL),new int[]{
+            new GameImage(getTexture(TEXTURE_TROLL),new int[]{
                 /* tm    x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
                 100,  1,  1, 18, 25,  9, 13,  6,  2,  6, 23, 20,  0,  // 0. Stand
                 1, 41,  1, 18, 25,  9, 13,  6,  2,  6, 23, 20,  0,  // 1. Walk
@@ -135,9 +160,9 @@ public class LadybirdGame extends GameBase {
             },new int[]{ 0,1,3, }),
         };
 
-        Texture t1 = getTexture(GameScreen.TEXTURE_TILES);
-        Texture t2 = getTexture(GameScreen.TEXTURE_ITEMS);
-        Texture t3 = getTexture(GameScreen.TEXTURE_GUI);
+        Texture t1 = getTexture(TEXTURE_TILES);
+        Texture t2 = getTexture(TEXTURE_ITEMS);
+        Texture t3 = getTexture(TEXTURE_GUI);
         clips = new Clip[] {
             new Clip(t1,  0,  0, 5,25, 0, 0,false),  // CLIP_VTILE
 
@@ -175,7 +200,7 @@ public class LadybirdGame extends GameBase {
             public void handleHttpResponse(HttpResponse httpResponse) {
                 String response = httpResponse.getResultAsString();
                 levels = com.eclipsesource.json.Json.parse(response).asObject();
-                screen.showSplash(GameScreen.SPLASH_START,20,str.get("appName"));
+                screen.showSplash(SPLASH_START,20,str.get("appName"));
             }
 
             @Override
@@ -236,14 +261,14 @@ public class LadybirdGame extends GameBase {
             action = 0;
             actionTimer = 0;
             switch(a) {
-                case Level.START_GAME:
+                case START_GAME:
                     screen.start();
                     startLevel();
                     break;
-                case Level.NEXT_LEVEL:
+                case NEXT_LEVEL:
                     nextLevel();
                     break;
-                case Level.NEXT_ROUND:
+                case NEXT_ROUND:
                     startLevel();
                     break;
             }
@@ -292,7 +317,7 @@ public class LadybirdGame extends GameBase {
 
     @Override
     public Texture getGUITexture() {
-        return getTexture(GameScreen.TEXTURE_GUI);
+        return getTexture(TEXTURE_GUI);
     }
 
     public GameScreen getGameScreen() {

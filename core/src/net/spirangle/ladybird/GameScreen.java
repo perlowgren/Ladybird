@@ -1,5 +1,9 @@
 package net.spirangle.ladybird;
 
+import static net.spirangle.ladybird.LadybirdGame.*;
+import static net.spirangle.ladybird.Level.NEXT_ROUND;
+import static net.spirangle.ladybird.Level.START_GAME;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.TextInputListener;
@@ -10,9 +14,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
-import net.spirangle.ladybird.LadybirdGame.HiScore;
+import net.spirangle.ladybird.LadybirdGame.*;
 import net.spirangle.minerva.Point;
 import net.spirangle.minerva.Rectangle;
+import net.spirangle.minerva.gdx.GameBase;
 import net.spirangle.minerva.gdx.ScreenBase;
 import net.spirangle.minerva.gdx.sprite.Clip;
 
@@ -33,18 +38,6 @@ public class GameScreen extends ScreenBase {
     public static final int SPLASH_SCORE       = 4;
     public static final int SPLASH_HISCORE     = 5;
 
-    public static final int FONT_PROFONT12B    = 0;
-    public static final int FONT_PROFONT12W    = 1;
-    public static final int FONT_RISQUE14      = 2;
-    public static final int FONT_RISQUE18      = 3;
-
-    public static final int TEXTURE_SPLASH     = 0;
-    public static final int TEXTURE_GUI        = 1;
-    public static final int TEXTURE_TILES      = 2;
-    public static final int TEXTURE_ITEMS      = 3;
-    public static final int TEXTURE_CREATURES  = 4;
-    public static final int TEXTURE_TROLL      = 5;
-
     public static final int CLIP_VTILE         = 0;
     public static final int CLIP_HEART         = 1;
     public static final int CLIP_APPLE         = 2;
@@ -60,17 +53,6 @@ public class GameScreen extends ScreenBase {
     public static final int CLIP_JUMP_BUTTON   = 11;
     public static final int CLIP_FIRE_BUTTON   = 12;
     public static final int CLIP_GOOGLE_ICON   = 13;
-
-    public static final int SOUND_APPEAR       = 0;
-    public static final int SOUND_FOOTSTEPS    = 1;
-    public static final int SOUND_JUMP         = 2;
-    public static final int SOUND_THROW        = 3;
-    public static final int SOUND_TROLL_HIT    = 4;
-    public static final int SOUND_CREATURE_HIT = 5;
-    public static final int SOUND_DOOR         = 6;
-
-    public static final int MUSIC_NONE         = -1;
-    public static final int MUSIC_SUNNY_DAY    = 0;
 
     private static class TextInput implements TextInputListener {
         public String input = null;
@@ -163,9 +145,8 @@ public class GameScreen extends ScreenBase {
         touch = new Point[10];
         for(int i = 0; i<10; ++i) touch[i] = new Point(-1,-1);
 
-        int w, h;
-        w = Gdx.graphics.getWidth();
-        h = Gdx.graphics.getHeight();
+        int w = Gdx.graphics.getWidth();
+        int h = Gdx.graphics.getHeight();
         zoom = (float)Math.floor((float)w/240.0f);
 
         levelBorder = new Rectangle(0,0,display.width,display.height);
@@ -218,20 +199,19 @@ public class GameScreen extends ScreenBase {
         else if(game.getLevel()!=null) {
             Level level = game.getLevel();
             Player player = game.getPlayer();
-            GameObject focus = player;
             int i, m, n, x, y;
             Color bg = level.getBackgroundColor();
 
             level.update();
 
-            if(!focus.isDead()) {
+            if(!player.isDead()) {
                 levelBorder.set(0,0,level.getWidth(),level.getHeight());
                 levelView.set(0,0,Math.min(levelBorder.width,viewport.width),Math.min(levelBorder.height,viewport.height));
 
                 if(levelBorder.width<viewport.width)
                     levelBorder.x = (viewport.width-levelBorder.width)/2;
                 else {
-                    levelView.x = focus.getX()+focus.getCenterX()-levelView.width/2;
+                    levelView.x = player.getX()+player.getCenterX()-levelView.width/2;
                     if(levelView.x<0) levelView.x = 0;
                     else if(levelView.x+levelView.width>levelBorder.width)
                         levelView.x = levelBorder.width-levelView.width;
@@ -239,7 +219,7 @@ public class GameScreen extends ScreenBase {
                 if(levelBorder.height<viewport.height)
                     levelBorder.y = (viewport.height-levelBorder.height)/2;
                 else {
-                    levelView.y = focus.getY()-focus.getHeight()+focus.getCenterY()-levelView.height/2;
+                    levelView.y = player.getY()-player.getHeight()+player.getCenterY()-levelView.height/2;
                     if(levelView.y<0) levelView.y = 0;
                     else if(levelView.y+levelView.height>levelBorder.height)
                         levelView.y = levelBorder.height-levelView.height;
@@ -381,7 +361,7 @@ public class GameScreen extends ScreenBase {
     public boolean keyAction(int keycode,boolean active) {
         switch(keycode) {
             case Keys.ESCAPE:
-                if(active) showSplash(SPLASH_START,20,LadybirdGame.str.get("appName"));
+                if(active) showSplash(SPLASH_START,20,GameBase.str.get("appName"));
                 return true;
             case Keys.UP:
                 Player.keys[0] = active;
@@ -454,8 +434,8 @@ public class GameScreen extends ScreenBase {
 
     public void clearMessage() {
         messageTimer = 0;
-        for(int i = 0; i<message.length; ++i)
-            message[i].timer = 0;
+        for(Message m : message)
+            m.timer = 0;
     }
 
     public boolean showingMessage() {
@@ -484,10 +464,8 @@ public class GameScreen extends ScreenBase {
 
     public void paintMessage() {
         if(messageTimer>0) {
-            Message m;
             boolean u = false;
-            for(int i = 0; i<message.length; ++i) {
-                m = message[i];
+            for(Message m : message) {
                 if(m.timer<=0) continue;
                 m.font.draw(batch,m.layout,m.x,m.y);
                 --m.timer;
@@ -551,12 +529,12 @@ public class GameScreen extends ScreenBase {
             switch(splash) {
                 case SPLASH_START:
                     splash = SPLASH_NONE;
-                    game.setAction(Level.START_GAME,0);
+                    game.setAction(START_GAME,0);
                     break;
                 case SPLASH_WIN:
                     if(name==null) {
                         textListener = new TextInput();
-                        Gdx.input.getTextInput(textListener,LadybirdGame.str.get("enterName"),"","");
+                        Gdx.input.getTextInput(textListener,GameBase.str.get("enterName"),"","");
                     } else {
                         splash = SPLASH_IDLE;
                         hiscore = null;
@@ -564,17 +542,17 @@ public class GameScreen extends ScreenBase {
                     }
                     break;
                 case SPLASH_SCORE:
-                    showSplash(SPLASH_HISCORE,40,LadybirdGame.str.format("round",round));
-                    showMessage(h2Font,LadybirdGame.str.get("topRank"),40,0,false);
-                    showMessage(pFont,LadybirdGame.str.format("topPlayers",
-                                                              hiscore.hiscore1,
-                                                              hiscore.hiscore2,
-                                                              hiscore.hiscore3,
-                                                              hiscore.hiscore4),40,0,false);
+                    showSplash(SPLASH_HISCORE,40,GameBase.str.format("round",round));
+                    showMessage(h2Font,GameBase.str.get("topRank"),40,0,false);
+                    showMessage(pFont,GameBase.str.format("topPlayers",
+                                                          hiscore.hiscore1,
+                                                          hiscore.hiscore2,
+                                                          hiscore.hiscore3,
+                                                          hiscore.hiscore4),40,0,false);
                     break;
                 case SPLASH_HISCORE:
                     splash = SPLASH_NONE;
-                    game.setAction(Level.NEXT_ROUND,0);
+                    game.setAction(NEXT_ROUND,0);
                     break;
             }
         }
@@ -602,16 +580,16 @@ public class GameScreen extends ScreenBase {
         time = player.getFrames();
         score = player.getScore();
         game.playSound(SOUND_APPEAR);
-        showSplash(SPLASH_WIN,20,LadybirdGame.str.format("round",round));
-        showMessage(null,LadybirdGame.str.format("completed",round),20,0,false);
+        showSplash(SPLASH_WIN,20,GameBase.str.format("round",round));
+        showMessage(null,GameBase.str.format("completed",round),20,0,false);
     }
 
     public void showHiScore(HiScore hs) {
         hiscore = hs;
         name = hiscore.name;
         rank = hiscore.rank;
-        showSplash(SPLASH_SCORE,120,LadybirdGame.str.format("round",round));
-        showMessage(h2Font,LadybirdGame.str.format("score",name,score,timeFormat(time),rank),120,0,false);
+        showSplash(SPLASH_SCORE,120,GameBase.str.format("round",round));
+        showMessage(h2Font,GameBase.str.format("score",name,score,timeFormat(time),rank),120,0,false);
     }
 }
 

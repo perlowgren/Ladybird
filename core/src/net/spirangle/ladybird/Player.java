@@ -1,11 +1,19 @@
 package net.spirangle.ladybird;
 
+import static net.spirangle.ladybird.GameScreen.LAYERS;
+import static net.spirangle.ladybird.LadybirdGame.*;
+import static net.spirangle.ladybird.Level.NEXT_LEVEL;
+import static net.spirangle.ladybird.Level.START_GAME;
+import static net.spirangle.ladybird.LevelFactory.*;
 import static net.spirangle.ladybird.LevelFactory.GameObjectTemplate.APPLE;
 
-import net.spirangle.ladybird.LevelFactory.PlayerTemplate;
+import net.spirangle.ladybird.LevelFactory.*;
 import net.spirangle.minerva.Rectangle;
+import net.spirangle.minerva.gdx.GameBase;
 
-public class Player extends GameObject {
+import java.util.List;
+
+public class Player extends Creature {
     public static boolean[] keys = new boolean[6];
 
     protected int startX;
@@ -24,8 +32,8 @@ public class Player extends GameObject {
 
     protected boolean footsteps;
 
-    public Player(Level l,int x,int y,int z,int t) {
-        super(l,x,y,z,t);
+    public Player(Level level,int x,int y,int z,int type) {
+        super(level,x,y,z,type);
         startX = x;
         startY = y;
         startZ = z;
@@ -94,6 +102,7 @@ public class Player extends GameObject {
         return score;
     }
 
+    @Override
     public void hitTarget(int n) {
         if(n>0) {
             ++hits;
@@ -105,7 +114,7 @@ public class Player extends GameObject {
     public int hit(int jmp) {
         if((stat&DEAD)!=0) return 0;
         if(jmp>=-1) jump = jmp;
-        z = GameScreen.LAYERS-1;
+        z = LAYERS-1;
         stat |= DEAD;
         return 2;
     }
@@ -133,7 +142,7 @@ public class Player extends GameObject {
                     } else {
                         stat |= PASSIVE;
                         level.removeObject(this);
-                        game.showMessage(LadybirdGame.str.get("gameOver"),40,Level.START_GAME);
+                        game.showMessage(GameBase.str.get("gameOver"),40,START_GAME);
                     }
                 } else {
                     move(flip? -speed : speed,-jump,true);
@@ -172,7 +181,7 @@ public class Player extends GameObject {
         if((action&JUMP)!=0 && (stat&JUMP)==0) {
             jump = power;
             stat |= JUMP;
-            game.playSound(GameScreen.SOUND_JUMP);
+            game.playSound(SOUND_JUMP);
         }
 
         // Check if standing on solid ground, otherwise flag jumping:
@@ -231,45 +240,45 @@ public class Player extends GameObject {
                         default:
                             break;
 
-                        case LevelFactory.LIFE:
-                            if(life<10) life += o1.value;
-                            o1.delete();
+                        case LIFE:
+                            if(life<10) life += o.value;
+                            o.delete();
                             break;
 
-                        case LevelFactory.AMMO:
-                            ammo += o1.value;
-                            o1.delete();
+                        case AMMO:
+                            ammo += o.value;
+                            o.delete();
                             break;
 
-                        case LevelFactory.GOLD:
-                            chests += o1.value;
-                            o1.delete();
+                        case GOLD:
+                            chests += o.value;
+                            o.delete();
                             break;
 
-                        case LevelFactory.POWER:
-                            power += o1.value;
+                        case POWER:
+                            power += o.value;
                             if(power<0) power = 0;
-                            o1.delete();
+                            o.delete();
                             ++buffs[2];
                             break;
 
-                        case LevelFactory.SPEED:
-                            speed += o1.value;
+                        case SPEED:
+                            speed += o.value;
                             if(speed<1) speed = 1;
-                            o1.delete();
+                            o.delete();
                             ++buffs[1];
                             break;
 
-                        case LevelFactory.EXIT:
+                        case EXIT:
                             if(chests>=collect) {
-                                String nextLevelId = o1.getParam("level");
+                                String nextLevelId = o.getParam("level");
                                 if(nextLevelId==null) nextLevelId = game.getLevel().getNextLevelId();
                                 if(nextLevelId!=null) {
                                     stat |= PASSIVE;
                                     level.removeObject(this);
-                                    game.playSound(GameScreen.SOUND_DOOR);
+                                    game.playSound(SOUND_DOOR);
                                     game.setNextLevelId(nextLevelId);
-                                    game.setAction(Level.NEXT_LEVEL,12);
+                                    game.setAction(NEXT_LEVEL,12);
                                 }
                             }
                             break;
@@ -290,12 +299,12 @@ public class Player extends GameObject {
 
         if((stat&JUMP)!=0 || (stat&WALK)==0) {
             if(footsteps) {
-                game.stopSound(GameScreen.SOUND_FOOTSTEPS);
+                game.stopSound(SOUND_FOOTSTEPS);
                 footsteps = false;
             }
         } else if((stat&WALK)!=0) {
             if(!footsteps) {
-                game.loopSound(GameScreen.SOUND_FOOTSTEPS);
+                game.loopSound(SOUND_FOOTSTEPS);
                 footsteps = true;
             }
         }
@@ -318,13 +327,13 @@ public class Player extends GameObject {
 
     public void shoot(LadybirdGame g) {
         if(ammo==0 || timer>0) return;
-        Projectile p = new Projectile(level,solid.x+solid.width/2,solid.y+solid.height/2,GameScreen.LAYERS-1,APPLE.index);
+        Projectile p = new Projectile(level,solid.x+solid.width/2,solid.y+solid.height/2,LAYERS-1,APPLE.index,this);
         p.setData(0,3,0,1,0,MOVING|(flip? FLIP : 0));
         p.jump = 1;
         level.addObject(p);
         --ammo;
         timer = 3;
-        LadybirdGame.getInstance().playSound(GameScreen.SOUND_THROW);
+        LadybirdGame.getInstance().playSound(SOUND_THROW);
     }
 
     @Override

@@ -1,8 +1,14 @@
 package net.spirangle.ladybird;
 
+import java.util.List;
+
 public class Projectile extends GameObject {
-    public Projectile(Level l,int x,int y,int z,int t) {
-        super(l,x,y,z,t);
+
+    protected GameObject source;
+
+    public Projectile(Level level,int x,int y,int z,int type,GameObject source) {
+        super(level,x,y,z,type);
+        this.source = source;
     }
 
     @Override
@@ -12,16 +18,16 @@ public class Projectile extends GameObject {
 
     @Override
     public void update() {
-        GameObject to = getCollision();
-        Player player = LadybirdGame.getInstance().getPlayer();
-        for(; to!=null; to=to.next) {
-            if(to==player) continue;
-            player.hitTarget(to.hit(-1));
-            delete();
-            return;
+        List<GameObject> targetList = getCollision();
+        if(targetList!=null) {
+            for(GameObject target : targetList) {
+                if(target==source) continue;
+                source.hitTarget(target.hit(-1));
+                delete();
+                return;
+            }
         }
-
-        move(flip ? -speed : speed,-jump,true);
+        move(flip? -speed : speed,-jump,true);
         if(jump>-4) --jump;
         if(!level.isVisible(space)) delete();
     }

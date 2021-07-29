@@ -1,8 +1,8 @@
 package net.spirangle.ladybird;
 
 public class Item extends GameObject {
-    public Item(Level l,int x,int y,int z,int t) {
-        super(l,x,y,z,t);
+    public Item(Level level,int x,int y,int z,int type) {
+        super(level,x,y,z,type);
     }
 
     @Override

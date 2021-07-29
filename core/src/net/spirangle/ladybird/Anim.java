@@ -11,12 +11,12 @@ public class Anim {
     public int anim;
     public boolean flip;
 
-    public Anim(int img) {
-        image = LadybirdGame.getInstance().getImage(img);
-        timer = 0;
-        frame = 0;
-        anim = 0;
-        flip = false;
+    public Anim(int imageId) {
+        this.image = LadybirdGame.getInstance().getImage(imageId);
+        this.timer = 0;
+        this.frame = 0;
+        this.anim = 0;
+        this.flip = false;
     }
 
     public void draw(SpriteBatch batch,int x,int y) {

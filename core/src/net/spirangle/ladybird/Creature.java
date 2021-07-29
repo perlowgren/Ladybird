@@ -2,8 +2,8 @@ package net.spirangle.ladybird;
 
 public class Creature extends GameObject {
 
-    public Creature(Level l,int x,int y,int z,int t) {
-        super(l,x,y,z,t);
+    public Creature(Level level,int x,int y,int z,int type) {
+        super(level,x,y,z,type);
     }
 
     @Override
