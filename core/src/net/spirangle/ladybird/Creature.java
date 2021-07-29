@@ -1,6 +1,7 @@
 package net.spirangle.ladybird;
 
 import static net.spirangle.ladybird.GameScreen.LAYERS;
+import static net.spirangle.ladybird.LadybirdGame.SOUND_CREATURE_HIT;
 
 public class Creature extends GameObject {
 
@@ -22,6 +23,7 @@ public class Creature extends GameObject {
             z = LAYERS-1;
             if(verticalForce>=-1) jump = verticalForce;
         }
+        LadybirdGame.getInstance().playSound(SOUND_CREATURE_HIT);
         return true;
     }
 

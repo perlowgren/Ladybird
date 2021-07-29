@@ -112,6 +112,7 @@ public class Player extends Creature {
         if(verticalForce>=-1) jump = verticalForce;
         z = LAYERS-1;
         setDead(true);
+        LadybirdGame.getInstance().playSound(SOUND_TROLL_HIT);
         return true;
     }
 
