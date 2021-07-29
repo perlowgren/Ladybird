@@ -103,20 +103,18 @@ public class Player extends Creature {
     }
 
     @Override
-    public void hitTarget(int n) {
-        if(n>0) {
-            ++hits;
-            if(n==2) ++kills;
-        }
+    public void hitTarget(GameObject target) {
+        ++hits;
+        if(target.isDead()) ++kills;
     }
 
     @Override
-    public int hit(int jmp) {
-        if((stat&DEAD)!=0) return 0;
-        if(jmp>=-1) jump = jmp;
+    public boolean hit(int verticalForce) {
+        if(isDead()) return false;
+        if(verticalForce>=-1) jump = verticalForce;
         z = LAYERS-1;
-        stat |= DEAD;
-        return 2;
+        setDead(true);
+        return true;
     }
 
     @Override
@@ -130,9 +128,9 @@ public class Player extends Creature {
         ++frames;
         if(timer>0) --timer;
 
-        if((stat&PASSIVE)!=0) return;
+        if(isPassive()) return;
 
-        if((stat&DEAD)!=0) {
+        if(isDead()) {
             if(life>0) {
                 if(!game.getGameScreen().isVisible(space)) {
                     --life;
@@ -140,59 +138,57 @@ public class Player extends Creature {
                         transport(startX,startY,startZ,true);
                         stat = startStat;
                     } else {
-                        stat |= PASSIVE;
+                        setPassive(true);
                         level.removeObject(this);
                         game.showMessage(GameBase.str.get("gameOver"),40,START_GAME);
                     }
                 } else {
-                    move(flip? -speed : speed,-jump,true);
+                    move(isFacingLeft()? -speed : speed,-jump,true);
                     if(jump>-8) --jump;
                 }
             }
             return;
         }
 
-        stat &= ~(STAND|WALK);
+        setWalking(false);
         action = 0;
-        if(keys[0]) action |= LEFT;
-        if(keys[1]) action |= RIGHT;
-        if(keys[3]) action |= UP;
-        if(keys[4]) action |= DOWN;
-        if((action&(LEFT|RIGHT))!=0) stat |= WALK;
-
+        if(keys[0]) setActionMoveLeft();
+        if(keys[1]) setActionMoveRight();
         if(keys[2]) {
-            action |= JUMP;
+            setActionJump();
             keys[2] = false;
         }
-
+        if(keys[3]) setActionMoveUp();
+        if(keys[4]) setActionMoveDown();
         if(keys[5]) shoot(game);
 
+        if(isActionMoveHorizontally()) setWalking(true);
+
         // Handle walking:
-        if((stat&WALK)!=0) {
-            if((action&LEFT)!=0) {
-                flip = true;
-                if(getCollision(-speed,0,SOLID,MOBILE,false)==null) move(-speed,0,true);
-            } else if((action&RIGHT)!=0) {
-                flip = false;
-                if(getCollision(speed,0,SOLID,MOBILE,false)==null) move(speed,0,true);
+        if(isWalking()) {
+            if(isActionMoveLeft()) {
+                setFacingLeft();
+                if(!hasCollision(-speed,0,SOLID,MOBILE,false)) move(-speed,0,true);
+            } else if(isActionMoveRight()) {
+                setFacingRight();
+                if(!hasCollision(speed,0,SOLID,MOBILE,false)) move(speed,0,true);
             }
         }
 
-        if((action&JUMP)!=0 && (stat&JUMP)==0) {
+        if(isActionJump() && !isJumping()) {
             jump = power;
-            stat |= JUMP;
+            setJumping(true);
             game.playSound(SOUND_JUMP);
         }
 
         // Check if standing on solid ground, otherwise flag jumping:
-        if((stat&JUMP)==0 && getCollision(0,1,SOLID,0,false)==null) {
-            stat |= JUMP;
-        }
+        if(!isJumping() && !hasCollision(0,1,SOLID,0,false))
+            setJumping(true);
 
         // Handle jumping:
-        if((stat&JUMP)!=0) {
+        if(isJumping()) {
             if(jump>0) { // Collision detection for jumping up:
-                if((objList=getCollision(0,-jump,SOLID))!=null) {
+                if((objList=getCollisions(0,-jump,SOLID))!=null) {
                     obj = null;
                     for(GameObject o : objList)
                         if((o.stat&MOBILE)==0 && // For unmoving solid objects
@@ -207,38 +203,37 @@ public class Player extends Creature {
                 }
             }
             if(jump<=0) { // Collision detection for falling down:
-                if((objList=getCollision(0,-jump,SOLID))!=null) {
+                if((objList=getCollisions(0,-jump,SOLID))!=null) {
                     obj = null;
                     for(GameObject o : objList)
-                        if(o.solid.y>=solid.y+solid.height && (obj==null || o.solid.y<obj.solid.y)) obj = o;
+                        if(o.solid.y>=solid.y+solid.height && (obj==null || o.solid.y<obj.solid.y))
+                            obj = o;
                     if(obj!=null) {
                         move(0,obj.solid.y-(solid.y+solid.height),true);
-                        stat &= ~JUMP;
                         jump = 0;
+                        setJumping(false);
                     }
                 }
             }
             // If no collision and still jumping
-            if(obj==null && (stat&JUMP)!=0) {
+            if(obj==null && isJumping()) {
                 move(0,-jump,true);
                 if(jump>-power) --jump;
             }
         }
 
-        if((objList=getCollision())!=null) {
-
+        if((objList=getCollisions())!=null) {
             // Check if hit by a monster or projectile:
             for(GameObject o : objList)
-                if((o.stat&AGGRO)!=0 && (o.stat&DEAD)==0) {
+                if(o.isAggro() && !o.isDead()) {
                     o.hit(-1);
                     hit(3);
                     break;
                 }
 
             for(GameObject o : objList)
-                if((o.stat&BUFF)!=0)
+                if(o.effect!=0)
                     switch(o.effect) {
-                        case 0:
                         default:
                             break;
 
@@ -276,7 +271,7 @@ public class Player extends Creature {
                                 String nextLevelId = o.getParam("level");
                                 if(nextLevelId==null) nextLevelId = game.getLevel().getNextLevelId();
                                 if(nextLevelId!=null) {
-                                    stat |= PASSIVE;
+                                    setPassive(true);
                                     level.removeObject(this);
                                     game.playSound(SOUND_DOOR);
                                     game.setNextLevelId(nextLevelId);
@@ -288,23 +283,26 @@ public class Player extends Creature {
         }
 
         // Cannot move outside level border, to left and right:
-        if(solid.x<border.x) move(border.x-solid.x,0,true);
-        else if(solid.x+solid.width>border.x+border.width) move((border.x+border.width)-(solid.x+solid.width),0,true);
+        if(solid.x<border.x)
+            move(border.x-solid.x,0,true);
+        else if(solid.x+solid.width>border.x+border.width)
+            move((border.x+border.width)-(solid.x+solid.width),0,true);
         // Killed if moves below level border bottom:
-        if(solid.y+solid.height>border.height) hit(-2);
+        if(solid.y+solid.height>border.height)
+            hit(-2);
 
-        if((stat&DEAD)!=0) n = 3;
-        else if((stat&JUMP)!=0) n = 2;
-        else if((stat&WALK)!=0) n = 1;
+        if(isDead()) n = 3;
+        else if(isJumping()) n = 2;
+        else if(isWalking()) n = 1;
         else  n = 0;
         image.setAnimation(animationIndexByType[n][type],this);
 
-        if((stat&JUMP)!=0 || (stat&WALK)==0) {
+        if(isJumping() || !isWalking() || isPassive()) {
             if(footsteps) {
                 game.stopSound(SOUND_FOOTSTEPS);
                 footsteps = false;
             }
-        } else if((stat&WALK)!=0) {
+        } else if(isWalking()) {
             if(!footsteps) {
                 game.loopSound(SOUND_FOOTSTEPS);
                 footsteps = true;
@@ -339,8 +337,8 @@ public class Player extends Creature {
     }
 
     @Override
-    public void transport(int x,int y,int z,boolean g) {
-        super.transport(x,y,z,g);
+    public void transport(int x,int y,int z,boolean updateGrid) {
+        super.transport(x,y,z,updateGrid);
         startX = x;
         startY = y;
         startZ = z;

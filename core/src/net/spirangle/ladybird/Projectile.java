@@ -18,13 +18,15 @@ public class Projectile extends GameObject {
 
     @Override
     public void update() {
-        List<GameObject> targetList = getCollision();
+        List<GameObject> targetList = getCollisions();
         if(targetList!=null) {
             for(GameObject target : targetList) {
                 if(target==source) continue;
-                source.hitTarget(target.hit(-1));
-                delete();
-                return;
+                if(target.hit(-1)) {
+                    source.hitTarget(target);
+                    delete();
+                    return;
+                }
             }
         }
         move(flip? -speed : speed,-jump,true);

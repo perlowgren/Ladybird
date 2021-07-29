@@ -9,4 +9,9 @@ public class Item extends GameObject {
     public boolean isItem() {
         return true;
     }
+
+    @Override
+    public boolean hit(int verticalForce) {
+        return false;
+    }
 }

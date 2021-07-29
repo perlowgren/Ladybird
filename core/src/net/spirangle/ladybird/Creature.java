@@ -1,5 +1,7 @@
 package net.spirangle.ladybird;
 
+import static net.spirangle.ladybird.GameScreen.LAYERS;
+
 public class Creature extends GameObject {
 
     public Creature(Level level,int x,int y,int z,int type) {
@@ -8,6 +10,18 @@ public class Creature extends GameObject {
 
     @Override
     public boolean isCreature() {
+        return true;
+    }
+
+    @Override
+    public boolean hit(int verticalForce) {
+        if(isDead()) return false;
+        if(--life<=0) {
+            life = 0;
+            setDead(true);
+            z = LAYERS-1;
+            if(verticalForce>=-1) jump = verticalForce;
+        }
         return true;
     }
 
