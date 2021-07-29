@@ -47,6 +47,10 @@ public class LadybirdGame extends GameBase {
     public static final int SOUND_TROLL_HIT    = 4;
     public static final int SOUND_CREATURE_HIT = 5;
     public static final int SOUND_DOOR         = 6;
+    public static final int SOUND_CHEST        = 7;
+    public static final int SOUND_POTION       = 8;
+    public static final int SOUND_APPLE        = 9;
+    public static final int SOUND_HEART        = 10;
 
     public static final int MUSIC_NONE         = -1;
     public static final int MUSIC_SUNNY_DAY    = 0;
@@ -104,6 +108,10 @@ public class LadybirdGame extends GameBase {
         addAsset(SOUND_TROLL_HIT,"audio/TrollHit.ogg",AssetFileType.SOUND);
         addAsset(SOUND_CREATURE_HIT,"audio/CreatureHit.ogg",AssetFileType.SOUND);
         addAsset(SOUND_DOOR,"audio/Door.ogg",AssetFileType.SOUND);
+        addAsset(SOUND_CHEST,"audio/Chest.ogg",AssetFileType.SOUND);
+        addAsset(SOUND_POTION,"audio/Potion.ogg",AssetFileType.SOUND);
+        addAsset(SOUND_APPLE,"audio/Apple.ogg",AssetFileType.SOUND);
+        addAsset(SOUND_HEART,"audio/Heart.ogg",AssetFileType.SOUND);
         addAsset(MUSIC_SUNNY_DAY,"SunnyDay","audio/Sunny_Day.ogg",AssetFileType.MUSIC);
         addAsset(-1,"i18n/ladybird",AssetFileType.I18BUNDLE);
 
