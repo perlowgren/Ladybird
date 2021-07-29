@@ -10,6 +10,7 @@ import com.badlogic.gdx.Net.HttpRequest;
 import com.badlogic.gdx.Net.HttpResponse;
 import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Json;
 import com.eclipsesource.json.JsonObject;
@@ -192,25 +193,31 @@ public class LadybirdGame extends GameBase {
     }
 
     private void loadLevels() {
-        String url = HOST_URL+"/levels.json";
-        HttpRequest httpGet = new HttpRequest(HttpMethods.GET);
-        httpGet.setUrl(url);
-        Gdx.net.sendHttpRequest(httpGet,new HttpResponseListener() {
-            @Override
-            public void handleHttpResponse(HttpResponse httpResponse) {
-                String response = httpResponse.getResultAsString();
-                levels = com.eclipsesource.json.Json.parse(response).asObject();
-                screen.showSplash(SPLASH_START,20,str.get("appName"));
-            }
+        if(false) {
+            String url = HOST_URL+"/levels.json";
+            HttpRequest httpGet = new HttpRequest(HttpMethods.GET);
+            httpGet.setUrl(url);
+            Gdx.net.sendHttpRequest(httpGet,new HttpResponseListener() {
+                @Override
+                public void handleHttpResponse(HttpResponse httpResponse) {
+                    String response = httpResponse.getResultAsString();
+                    levels = com.eclipsesource.json.Json.parse(response).asObject();
+                    screen.showSplash(SPLASH_START,20,str.get("appName"));
+                }
 
-            @Override
-            public void failed(Throwable t) {
-            }
+                @Override
+                public void failed(Throwable t) {
+                }
 
-            @Override
-            public void cancelled() {
-            }
-        });
+                @Override
+                public void cancelled() {
+                }
+            });
+        } else {
+            FileHandle file = Gdx.files.internal("levels.json");
+            levels = com.eclipsesource.json.Json.parse(file.readString("UTF-8")).asObject();
+            screen.showSplash(SPLASH_START,20,str.get("appName"));
+        }
     }
 
     public void startLevel() {
