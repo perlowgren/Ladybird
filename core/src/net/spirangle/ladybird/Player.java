@@ -160,7 +160,7 @@ public class Player extends Creature {
         }
         if(keys[3]) setActionMoveUp();
         if(keys[4]) setActionMoveDown();
-        if(keys[5]) shoot(game);
+        if(keys[5]) shoot();
 
         if(isActionMoveHorizontally()) setWalking(true);
 
@@ -168,10 +168,12 @@ public class Player extends Creature {
         if(isWalking()) {
             if(isActionMoveLeft()) {
                 setFacingLeft();
-                if(!hasCollision(-speed,0,SOLID,MOBILE,false)) move(-speed,0,true);
+                if(!hasCollision(-speed,0,SOLID,MOBILE,false))
+                    move(-speed,0,true);
             } else if(isActionMoveRight()) {
                 setFacingRight();
-                if(!hasCollision(speed,0,SOLID,MOBILE,false)) move(speed,0,true);
+                if(!hasCollision(speed,0,SOLID,MOBILE,false))
+                    move(speed,0,true);
             }
         }
 
@@ -191,10 +193,7 @@ public class Player extends Creature {
                 if((objList=getCollisions(0,-jump,SOLID))!=null) {
                     obj = null;
                     for(GameObject o : objList)
-                        if((o.stat&MOBILE)==0 && // For unmoving solid objects
-                           o.solid.y+o.solid.height>=solid.y-jump && o.solid.y+o.solid.height<=solid.y && // Only collision if above, not if already within bounds
-                           (obj==null || o.solid.y+o.solid.height>obj.solid.y+obj.solid.height) // Find highest GameObject
-                        ) obj = o;
+                        if(!o.isMobile() && isCollisionAbove(o,jump) && o.isBottomBelow(obj)) obj = o;
                     if(obj!=null) {
                         move(0,(obj.solid.y+obj.solid.height)-solid.y,true);
                         jump = 0; // Stop upward jump motion
@@ -206,8 +205,7 @@ public class Player extends Creature {
                 if((objList=getCollisions(0,-jump,SOLID))!=null) {
                     obj = null;
                     for(GameObject o : objList)
-                        if(o.solid.y>=solid.y+solid.height && (obj==null || o.solid.y<obj.solid.y))
-                            obj = o;
+                        if(isCollisionBelow(o,0) && o.isTopAbove(obj)) obj = o;
                     if(obj!=null) {
                         move(0,obj.solid.y-(solid.y+solid.height),true);
                         jump = 0;
@@ -311,23 +309,25 @@ public class Player extends Creature {
     }
 
     public void setData(PlayerTemplate pd) {
-        action = pd.action;
-        speed = pd.speed;
-        power = pd.power;
-        jump = pd.jump;
-        chests = pd.chests;
-        life += pd.life;
-        ammo += pd.ammo;
-        buffs = new int[] { 0,0,0,0 };
-        stat = pd.stat;
-        timer = 0;
-        if((stat&FLIP)!=0) flip = true;
-        startStat = stat;
+        this.action = pd.action;
+        this.speed = pd.speed;
+        this.power = pd.power;
+        this.jump = pd.jump;
+        this.chests = pd.chests;
+        this.life += pd.life;
+        this.ammo += pd.ammo;
+        this.buffs = new int[] { 0,0,0,0 };
+        this.stat = pd.stat;
+        this.timer = 0;
+        if((this.stat&FLIP)!=0) setFacingLeft();
+        this.startStat = this.stat;
     }
 
-    public void shoot(LadybirdGame g) {
+    public void shoot() {
         if(ammo==0 || timer>0) return;
-        Projectile p = new Projectile(level,solid.x+solid.width/2,solid.y+solid.height/2,LAYERS-1,APPLE.index,this);
+        int x = solid.x+solid.width/2;
+        int y = solid.y+solid.height/2;
+        Projectile p = new Projectile(level,x,y,LAYERS-1,APPLE.index,this);
         p.setData(0,3,0,1,0,MOVING|(flip? FLIP : 0));
         p.jump = 1;
         level.addObject(p);

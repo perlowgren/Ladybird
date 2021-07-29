@@ -312,6 +312,22 @@ public abstract class GameObject extends Anim {
                (hasNotFlags==0 || (stat&hasNotFlags)==0);
     }
 
+    public boolean isCollisionAbove(GameObject o,int y) {
+        return o!=null && o.solid.y+o.solid.height>=solid.y-jump && o.solid.y+o.solid.height<=solid.y;
+    }
+
+    public boolean isCollisionBelow(GameObject o,int y) {
+        return o!=null && o.solid.y>=solid.y+solid.height;
+    }
+
+    public boolean isBottomBelow(GameObject o) {
+        return o==null || solid.y+solid.height>o.solid.y+o.solid.height;
+    }
+
+    public boolean isTopAbove(GameObject o) {
+        return o==null || solid.y<o.solid.y;
+    }
+
     public void hitTarget(GameObject target) {
     }
 
