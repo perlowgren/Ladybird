@@ -124,8 +124,8 @@ public class Player extends Creature {
         LadybirdGame game = LadybirdGame.getInstance();
         Rectangle border = new Rectangle(0,0,level.getWidth(),level.getHeight());
         int n;
+        List<GameObject> objList;
         GameObject obj = null;
-        GameObject o1;
 
         ++frames;
         if(timer>0) --timer;
@@ -192,12 +192,13 @@ public class Player extends Creature {
         // Handle jumping:
         if((stat&JUMP)!=0) {
             if(jump>0) { // Collision detection for jumping up:
-                if((obj=getCollision(0,-jump,SOLID))!=null) {
-                    for(o1=obj,obj=null; o1!=null; o1=o1.next)
-                        if((o1.stat&MOBILE)==0 && // For unmoving solid objects
-                           o1.solid.y+o1.solid.height>=solid.y-jump && o1.solid.y+o1.solid.height<=solid.y && // Only collision if above, not if already within bounds
-                           (obj==null || o1.solid.y+o1.solid.height>obj.solid.y+obj.solid.height) // Find highest GameObject
-                        ) obj = o1;
+                if((objList=getCollision(0,-jump,SOLID))!=null) {
+                    obj = null;
+                    for(GameObject o : objList)
+                        if((o.stat&MOBILE)==0 && // For unmoving solid objects
+                           o.solid.y+o.solid.height>=solid.y-jump && o.solid.y+o.solid.height<=solid.y && // Only collision if above, not if already within bounds
+                           (obj==null || o.solid.y+o.solid.height>obj.solid.y+obj.solid.height) // Find highest GameObject
+                        ) obj = o;
                     if(obj!=null) {
                         move(0,(obj.solid.y+obj.solid.height)-solid.y,true);
                         jump = 0; // Stop upward jump motion
@@ -206,9 +207,10 @@ public class Player extends Creature {
                 }
             }
             if(jump<=0) { // Collision detection for falling down:
-                if((obj=getCollision(0,-jump,SOLID))!=null) {
-                    for(o1=obj,obj=null; o1!=null; o1=o1.next)
-                        if(o1.solid.y>=solid.y+solid.height && (obj==null || o1.solid.y<obj.solid.y)) obj = o1;
+                if((objList=getCollision(0,-jump,SOLID))!=null) {
+                    obj = null;
+                    for(GameObject o : objList)
+                        if(o.solid.y>=solid.y+solid.height && (obj==null || o.solid.y<obj.solid.y)) obj = o;
                     if(obj!=null) {
                         move(0,obj.solid.y-(solid.y+solid.height),true);
                         stat &= ~JUMP;
@@ -223,19 +225,19 @@ public class Player extends Creature {
             }
         }
 
-        if((obj=getCollision())!=null) {
+        if((objList=getCollision())!=null) {
 
             // Check if hit by a monster or projectile:
-            for(o1=obj; o1!=null; o1=o1.next)
-                if((o1.stat&AGGRO)!=0 && (o1.stat&DEAD)==0) {
-                    o1.hit(-1);
+            for(GameObject o : objList)
+                if((o.stat&AGGRO)!=0 && (o.stat&DEAD)==0) {
+                    o.hit(-1);
                     hit(3);
                     break;
                 }
 
-            for(o1=obj; o1!=null; o1=o1.next)
-                if((o1.stat&BUFF)!=0)
-                    switch(o1.effect) {
+            for(GameObject o : objList)
+                if((o.stat&BUFF)!=0)
+                    switch(o.effect) {
                         case 0:
                         default:
                             break;

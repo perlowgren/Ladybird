@@ -5,12 +5,14 @@ import static net.spirangle.ladybird.GameScreen.LAYERS;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.Array;
 import com.eclipsesource.json.JsonObject;
 
 import net.spirangle.minerva.Rectangle;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Level {
 
@@ -26,8 +28,10 @@ public class Level {
     private final int width;
     private final int height;
     private int chests;
-    private final Array<GameObject> updateIndex;
+    private final Set<GameObject> updateIndex;
     private final GameObject[][] grid;
+    private Set<GameObject> addedObjects;
+    private Set<GameObject> removedObjects;
 
     public Level(LadybirdGame g,JsonObject json,String levelId) {
         this.screen = g.getGameScreen();
@@ -38,8 +42,10 @@ public class Level {
         this.chests = 0;
         this.levelId = levelId;
         this.nextLevelId = json.getString("nextLevel","finish");
-        this.updateIndex = new Array<>();
+        this.updateIndex = new HashSet<>();
         this.grid = new GameObject[width/GRID+1][height/GRID+1];
+        this.addedObjects = null;
+        this.removedObjects = null;
     }
 
     public Color getBackgroundColor() {
@@ -78,74 +84,78 @@ public class Level {
         return r.x+r.width>0 && r.y+r.height>0 && r.x<width && r.y<height;
     }
 
-    public void addObject(GameObject to) {
-        if(!to.isStatic()) updateIndex.add(to);
-        putObject(to);
+    public synchronized void addObject(GameObject o) {
+        if(addedObjects==null) addedObjects = new HashSet<>();
+        addedObjects.add(o);
     }
 
-    public void deleteObject(GameObject to) {
-        updateIndex.removeValue(to,true);
-        removeObject(to);
+    public void deleteObject(GameObject o) {
+        if(removedObjects==null) removedObjects = new HashSet<>();
+        removedObjects.add(o);
     }
 
-    public void putObject(GameObject to) {
-        int x = to.getX()/GRID,y = to.getY()/GRID;
+    public void putObject(GameObject o) {
+        int x = o.getX()/GRID,y = o.getY()/GRID;
         if(x<0 || x>=grid.length || y<0 || y>=grid[0].length) return;
-        to.grid = grid[x][y];
-        grid[x][y] = to;
+        o.grid = grid[x][y];
+        grid[x][y] = o;
     }
 
-    public void removeObject(GameObject to) {
-        int x = to.getX()/GRID,y = to.getY()/GRID;
+    public void removeObject(GameObject o) {
+        int x = o.getX()/GRID,y = o.getY()/GRID;
         if(x<0 || x>=grid.length || y<0 || y>=grid[0].length) return;
         GameObject to1 = grid[x][y];
-        if(to1==to) grid[x][y] = to.grid;
+        if(to1==o) grid[x][y] = o.grid;
         else if(to1!=null) {
-            while(to1.grid!=to && to1.grid!=null) to1 = to1.grid;
-            if(to1.grid==to) to1.grid = to.grid;
+            while(to1.grid!=o && to1.grid!=null) to1 = to1.grid;
+            if(to1.grid==o) to1.grid = o.grid;
         }
-        to.grid = null;
+        o.grid = null;
     }
 
-    public GameObject getCollision(GameObject to,Rectangle r,int f,int n) {
-        GameObject to1 = null,to2;
+    public List<GameObject> getCollision(GameObject o,Rectangle r,int f,int n) {
+        List<GameObject> ret = null;
+        GameObject obj;
         int x = r.x/GRID,y = r.y/GRID,x1,y1;
         for(x1=Math.max(x-4,0); x1<=x+4 && x1<grid.length; ++x1)
             for(y1=Math.max(y-4,0); y1<=y+4 && y1<grid[x1].length; ++y1)
-                for(to2=grid[x1][y1]; to2!=null; to2=to2.grid) {
-                    if(to2.isCollision(to,r,f,n)) {
-                        to2.next = to1;
-                        to1 = to2;
+                for(obj=grid[x1][y1]; obj!=null; obj=obj.grid)
+                    if(obj.isCollision(o,r,f,n)) {
+                        if(ret==null) ret = new ArrayList<>();
+                        ret.add(obj);
                     }
-                }
-        return to1;
+        return ret;
     }
 
     public void update() {
-        Iterator<GameObject> iter = updateIndex.iterator();
-        GameObject to;
-        while(iter.hasNext()) {
-            to = iter.next();
-            to.update();
+        if(addedObjects!=null) {
+            for(GameObject o : addedObjects) {
+                if(!o.isStatic()) updateIndex.add(o);
+                putObject(o);
+            }
+            addedObjects = null;
         }
+        if(removedObjects!=null) {
+            for(GameObject o : removedObjects) {
+                updateIndex.remove(o);
+                removeObject(o);
+            }
+            removedObjects = null;
+        }
+        updateIndex.forEach(GameObject::update);
     }
 
     public void draw(SpriteBatch batch) {
-        int x,y,n;
-        GameObject to;
-        GameObject[] z = new GameObject[LAYERS];
         Rectangle view = screen.getView();
+        Set<GameObject> objList = new HashSet<>();
 
-        for(x=Math.max(view.x/GRID-4,0); (x-4)*GRID<=view.x+view.width && x<grid.length; ++x)
-            for(y=Math.max(view.y/GRID-4,0); (y-4)*GRID<=view.y+view.height && y<grid[x].length; ++y)
-                for(to=grid[x][y]; to!=null; to=to.grid) {
-                    n = to.getZ();
-                    to.next = z[n];
-                    z[n] = to;
-                }
+        for(int x=Math.max(view.x/GRID-4,0); (x-4)*GRID<=view.x+view.width && x<grid.length; ++x)
+            for(int y=Math.max(view.y/GRID-4,0); (y-4)*GRID<=view.y+view.height && y<grid[x].length; ++y)
+                for(GameObject o=grid[x][y]; o!=null; o=o.grid)
+                    objList.add(o);
 
-        for(n=0; n<LAYERS; ++n)
-            for(to=z[n]; to!=null; to=to.next)
-                to.draw(screen,batch);
+        for(int n=0; n<LAYERS; ++n)
+            for(GameObject o : objList)
+                if(o.getZ()==n) o.draw(screen,batch);
     }
 }

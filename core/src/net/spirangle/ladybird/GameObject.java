@@ -1,5 +1,8 @@
 package net.spirangle.ladybird;
 
+import static net.spirangle.ladybird.GameScreen.GRID;
+import static net.spirangle.ladybird.GameScreen.LAYERS;
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import net.spirangle.ladybird.LevelFactory.CreatureTemplate;
@@ -7,6 +10,7 @@ import net.spirangle.ladybird.LevelFactory.ItemTemplate;
 import net.spirangle.ladybird.LevelFactory.TileTemplate;
 import net.spirangle.minerva.Rectangle;
 
+import java.util.List;
 import java.util.Map;
 
 public abstract class GameObject extends Anim {
@@ -73,7 +77,6 @@ public abstract class GameObject extends Anim {
     protected Rectangle space;
     protected Rectangle solid;
     public GameObject grid;
-    public GameObject next;
 
     public GameObject(Level level,int x,int y,int z,int type) {
         super(imageIndexByType[type]);
@@ -85,7 +88,6 @@ public abstract class GameObject extends Anim {
         space = new Rectangle();
         solid = new Rectangle();
         grid = null;
-        next = null;
         setPosition(x,y);
     }
 
@@ -162,27 +164,27 @@ public abstract class GameObject extends Anim {
         return type;
     }
 
-    public GameObject getCollision() {
+    public List<GameObject> getCollision() {
         return getCollision(0,0,0,0,true);
     }
 
-    public GameObject getCollision(int f) {
+    public List<GameObject> getCollision(int f) {
         return getCollision(0,0,f,0,true);
     }
 
-    public GameObject getCollision(int x,int y) {
+    public List<GameObject> getCollision(int x,int y) {
         return getCollision(x,y,0,0,true);
     }
 
-    public GameObject getCollision(int x,int y,int f) {
+    public List<GameObject> getCollision(int x,int y,int f) {
         return getCollision(x,y,f,0,true);
     }
 
-    public GameObject getCollision(int x,int y,int f,int n) {
+    public List<GameObject> getCollision(int x,int y,int f,int n) {
         return getCollision(x,y,f,0,true);
     }
 
-    public GameObject getCollision(int x,int y,int f,int n,boolean s) {
+    public List<GameObject> getCollision(int x,int y,int f,int n,boolean s) {
         Rectangle r = new Rectangle(solid);
         if(x<0) { r.x += x;r.width -= x; }
         else if(x>0) r.width += x;
@@ -201,6 +203,9 @@ public abstract class GameObject extends Anim {
         return this!=o && solid.intersects(r) && (f==0 || (stat&f)!=0) && (n==0 || (stat&n)==0);
     }
 
+    public void hitTarget(int n) {
+    }
+
     /**
      * @return 0) No hit, dead or inanimate object. 1) Hit, not dead. 2) Hit and dead.
      */
@@ -216,61 +221,61 @@ public abstract class GameObject extends Anim {
     }
 
     public void update() {
-        if((stat&DEAD)!=0) {
+        if(isDead()) {
             move(0,-jump,true);
             if(jump>-8) --jump;
             if(!level.isVisible(space)) delete();
             return;
         }
-        if((stat&MOBILE)!=0) {
-            GameObject o;
+        if(isMobile()) {
+            List<GameObject> objList;
+            GameObject obj = null;
             Rectangle border = new Rectangle(0,0,level.getWidth(),level.getHeight());
             int x = 0,y = 0;
             if((action&LEFT)!=0) {
                 flip = true;
-                if((o=getCollision(-speed,0,SOLID))!=null || solid.x-speed<=border.x) {
-                    if(o!=null) {
-                        for(GameObject o1=o; o1!=null; o1=o1.next)
-                            if(o1.solid.x+o1.solid.width>o.solid.x+o.solid.width) o = o1;
-                        x = (o.solid.x+o.solid.width)-solid.x;
+                if((objList=getCollision(-speed,0,SOLID))!=null || solid.x-speed<=border.x) {
+                    if(objList!=null) {
+                        for(GameObject o : objList)
+                            if(obj==null || o.solid.x+o.solid.width>obj.solid.x+obj.solid.width) obj = o;
+                        x = (obj.solid.x+obj.solid.width)-solid.x;
                     } else x = border.x-solid.x;
                     action = (action& ~LEFT)|RIGHT;
                 } else x = -speed;
             } else if((action&RIGHT)!=0) {
                 flip = false;
-                if((o=getCollision(speed,0,SOLID))!=null || solid.x+solid.width+speed>=border.x+border.width) {
-                    if(o!=null) {
-                        for(GameObject o1=o; o1!=null; o1=o1.next)
-                            if(o1.solid.x<o.solid.x) o = o1;
-                        x = o.solid.x-(solid.x+solid.width);
+                if((objList=getCollision(speed,0,SOLID))!=null || solid.x+solid.width+speed>=border.x+border.width) {
+                    if(objList!=null) {
+                        for(GameObject o : objList)
+                            if(obj==null || o.solid.x<obj.solid.x) obj = o;
+                        x = obj.solid.x-(solid.x+solid.width);
                     } else x = (border.x+border.width)-(solid.x+solid.width);
                     action = (action& ~RIGHT)|LEFT;
                 } else x = speed;
             } else if((action&UP)!=0) {
-                if((o=getCollision(0,-speed,SOLID))!=null || solid.y-speed<=border.y) {
-                    if(o!=null) {
-                        for(GameObject o1=o; o1!=null; o1=o1.next)
-                            if(o1.solid.y+o1.solid.height>o.solid.y+o.solid.height) o = o1;
-                        y = (o.solid.y+o.solid.height)-solid.y;
+                if((objList=getCollision(0,-speed,SOLID))!=null || solid.y-speed<=border.y) {
+                    if(objList!=null) {
+                        for(GameObject o : objList)
+                            if(obj==null || o.solid.y+o.solid.height>obj.solid.y+obj.solid.height) obj = o;
+                        y = (obj.solid.y+obj.solid.height)-solid.y;
                     } else y = border.y-solid.y;
                     action = (action& ~UP)|DOWN;
                 } else y = -speed;
             } else if((action&DOWN)!=0) {
-                if((o=getCollision(0,speed,SOLID))!=null || solid.y-solid.height+speed>=border.y+border.height) {
-                    if(o!=null) {
-                        for(GameObject o1=o; o1!=null; o1=o1.next)
-                            if(o1.solid.y<o.solid.y) o = o1;
-                        y = o.solid.y-(solid.y+solid.height);
+                if((objList=getCollision(0,speed,SOLID))!=null || solid.y-solid.height+speed>=border.y+border.height) {
+                    if(objList!=null) {
+                        for(GameObject o : objList)
+                            if(obj==null || o.solid.y<obj.solid.y) obj = o;
+                        y = obj.solid.y-(solid.y+solid.height);
                     } else y = (border.y+border.height)-(solid.y+solid.height);
                     action = (action& ~DOWN)|UP;
                 } else y = speed;
             }
             if(x!=0 || y!=0) {
                 // Move objects standing on top:
-                o = getCollision(0,-1,MOVING,0,false);
-                for(; o!=null; o=o.next)
-                    if(o.solid.y+o.solid.height==solid.y) o.move(x,y,true);
-
+                if((objList=getCollision(0,-1,MOVING,0,false))!=null)
+                    for(GameObject o : objList)
+                        if(o.solid.y+o.solid.height==solid.y) o.move(x,y,true);
                 move(x,y,true);
             }
         }
