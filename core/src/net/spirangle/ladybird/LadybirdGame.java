@@ -12,8 +12,9 @@ import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Json;
+import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.ParseException;
 
 import net.spirangle.minerva.gdx.GameBase;
 import net.spirangle.minerva.gdx.LoadingScreen;
@@ -24,40 +25,42 @@ import java.net.URLEncoder;
 
 public class LadybirdGame extends GameBase {
 
-    public static final String APP_NAME        = "ladybird";
-    public static final String APP_TITLE       = "Ladybird's Gift";
-    public static final String HOST_URL        = "https://ladybird.spirangle.net";
+    public static final String APP_NAME         = "ladybird";
+    public static final String APP_TITLE        = "Ladybird's Gift";
+    public static final String HOST_URL         = "https://ladybird.spirangle.net";
 
-    public static final int FONT_PROFONT12B    = 0;
-    public static final int FONT_PROFONT12W    = 1;
-    public static final int FONT_RISQUE14      = 2;
-    public static final int FONT_RISQUE18      = 3;
+    public static final int FONT_PROFONT12B     = 0;
+    public static final int FONT_PROFONT12W     = 1;
+    public static final int FONT_RISQUE14       = 2;
+    public static final int FONT_RISQUE18       = 3;
 
-    public static final int TEXTURE_SPLASH     = 0;
-    public static final int TEXTURE_GUI        = 1;
-    public static final int TEXTURE_TILES      = 2;
-    public static final int TEXTURE_ITEMS      = 3;
-    public static final int TEXTURE_CREATURES  = 4;
-    public static final int TEXTURE_TROLL      = 5;
+    public static final int TEXTURE_SPLASH      = 0;
+    public static final int TEXTURE_GUI         = 1;
+    public static final int TEXTURE_TILES       = 2;
+    public static final int TEXTURE_ITEMS       = 3;
+    public static final int TEXTURE_CREATURES   = 4;
+    public static final int TEXTURE_TROLL       = 5;
 
-    public static final int SOUND_APPEAR       = 0;
-    public static final int SOUND_FOOTSTEPS    = 1;
-    public static final int SOUND_JUMP         = 2;
-    public static final int SOUND_THROW        = 3;
-    public static final int SOUND_TROLL_HIT    = 4;
-    public static final int SOUND_CREATURE_HIT = 5;
-    public static final int SOUND_DOOR         = 6;
-    public static final int SOUND_CHEST        = 7;
-    public static final int SOUND_POTION       = 8;
-    public static final int SOUND_APPLE        = 9;
-    public static final int SOUND_HEART        = 10;
+    public static final int SOUND_APPEAR        = 0;
+    public static final int SOUND_FOOTSTEPS     = 1;
+    public static final int SOUND_JUMP          = 2;
+    public static final int SOUND_THROW         = 3;
+    public static final int SOUND_TROLL_HIT     = 4;
+    public static final int SOUND_CREATURE_HIT  = 5;
+    public static final int SOUND_CREATURE_DEAD = 6;
+    public static final int SOUND_DOOR          = 7;
+    public static final int SOUND_CHEST         = 8;
+    public static final int SOUND_POTION        = 9;
+    public static final int SOUND_APPLE         = 10;
+    public static final int SOUND_HEART         = 11;
 
-    public static final int MUSIC_NONE         = -1;
-    public static final int MUSIC_SUNNY_DAY    = 0;
+    public static final int MUSIC_NONE          = -1;
+    public static final int MUSIC_SUNNY_DAY     = 0;
 
     public static class HiScore {
         public String name;
         public int rank;
+        public int round;
         public String hiscore1;
         public String hiscore2;
         public String hiscore3;
@@ -109,6 +112,7 @@ public class LadybirdGame extends GameBase {
         addAsset(SOUND_THROW,"audio/Throw.ogg",AssetFileType.SOUND);
         addAsset(SOUND_TROLL_HIT,"audio/TrollHit.ogg",AssetFileType.SOUND);
         addAsset(SOUND_CREATURE_HIT,"audio/CreatureHit.ogg",AssetFileType.SOUND);
+        addAsset(SOUND_CREATURE_DEAD,"audio/CreatureDead.ogg",AssetFileType.SOUND);
         addAsset(SOUND_DOOR,"audio/Door.ogg",AssetFileType.SOUND);
         addAsset(SOUND_CHEST,"audio/Chest.ogg",AssetFileType.SOUND);
         addAsset(SOUND_POTION,"audio/Potion.ogg",AssetFileType.SOUND);
@@ -128,21 +132,21 @@ public class LadybirdGame extends GameBase {
     public void loadingAssetsCompleted() {
         super.loadingAssetsCompleted();
 
-        images = new GameImage[]{
+        images = new GameImage[] {
             new GameImage(getTexture(TEXTURE_TILES),new int[] {
-                /* tm    x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
+            /*   tm   x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
                 100,  0, 25, 25,  5,  0,  0,  0,  0,  0,  0,  0,  0,  // 0. Horizontal Flat
                 100,  0,  0,  5, 25,  0,  0,  0,  0,  0,  0,  0,  0,  // 1. Vertical Flat
                 100, 25,  0, 10, 10,  0,  0,  0,  0,  0,  0,  0,  0,  // 2. Block
                 100,  0, 30, 25, 25,  0,  0,  0,  0,  0,  0,  0,  0,  // 3. Large Block 1
-                100, 25, 30, 25, 25,  0,  0,  0,  0,  0,  0,  0,  0,  // 3. Large Block 2
-                100, 35,  0, 15, 15,  0,  0,  2,  5, 11,  5,  0,  0,  // 4. Bush
-                100, 25, 15, 25, 15,  0,  0,  2,  5, 21,  5,  0,  0,  // 5. Cloud
-                100,  5,  0, 20, 25,  0,  0,  0,  0, 10, 25,  0,  0,  // 6. Door
-            },new int[]{ 0,1,2,3,4,5,6,7, }),
+                100, 25, 30, 25, 25,  0,  0,  0,  0,  0,  0,  0,  0,  // 4. Large Block 2
+                100, 35,  0, 15, 15,  0,  0,  2,  5, 11,  5,  0,  0,  // 5. Bush
+                100, 25, 15, 25, 15,  0,  0,  2,  5, 21,  5,  0,  0,  // 6. Cloud
+                100,  5,  0, 20, 25,  0,  0,  0,  0, 10, 25,  0,  0,  // 7. Door
+            },new int[]{ 0,1,2,3,4,5,6,7,8 }),
 
             new GameImage(getTexture(TEXTURE_ITEMS),new int[] {
-                /* tm    x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
+            /*   tm   x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
                 100,  1,  1, 10, 10,  0,  0,  0,  0,  0,  0,  0,  0,  // 0. Heart
                 100, 12,  1, 10, 10,  0,  0,  0,  0,  0,  0,  0,  0,  // 1. Apple
                 100, 23,  1, 10, 10,  0,  0,  0,  0,  0,  0,  0,  0,  // 3. Chest
@@ -150,25 +154,25 @@ public class LadybirdGame extends GameBase {
                 100, 12, 12, 10, 10,  0,  0,  0,  0,  0,  0,  0,  0,  // 2. Bottle Violet
                 100, 23, 12, 10, 10,  0,  0,  0,  0,  0,  0,  0,  0,  // 2. Bottle Orange
                 100, 34, 12, 10, 10,  0,  0,  0,  0,  0,  0,  0,  0,  // 2. Bottle Blue
-            },new int[] { 0,1,2,3,4,5,6, }),
+            },new int[] { 0,1,2,3,4,5,6,7 }),
 
-            new GameImage(getTexture(TEXTURE_CREATURES),new int[]{
-                /* tm    x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
+            new GameImage(getTexture(TEXTURE_CREATURES),new int[] {
+            /*   tm   x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
                 100,  1,  1, 20, 20, 10, 20,  1,  4, 18, 12, 22,  0,  // 0. Boogie - Stand
-                1, 45,  1, 20, 20, 10, 20,  1,  4, 18, 12, 22,  0,  // 1. Boogie - Walk
-                1,  1,  1, 20, 20, 10, 20,  1,  4, 18, 12, 22,  0,
+                  1, 45,  1, 20, 20, 10, 20,  1,  4, 18, 12, 22,  0,  // 1. Boogie - Walk
+                  1,  1,  1, 20, 20, 10, 20,  1,  4, 18, 12, 22,  0,
                 100,  1, 23, 15, 20,  8, 20,  0,  0,  0,  0, 17,  0,  // 3. Grull - Stand
-                1, 35, 23, 15, 20,  8, 20,  0,  0,  0,  0, 17,  0,  // 4. Grull - Walk
-                1,  1, 23, 15, 20,  8, 20,  0,  0,  0,  0, 17,  0,
-            },new int[]{ 0,1,3,4, }),
+                  1, 35, 23, 15, 20,  8, 20,  0,  0,  0,  0, 17,  0,  // 4. Grull - Walk
+                  1,  1, 23, 15, 20,  8, 20,  0,  0,  0,  0, 17,  0,
+            },new int[]{ 0,1,3,4,6 }),
 
-            new GameImage(getTexture(TEXTURE_TROLL),new int[]{
-                /* tm    x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
+            new GameImage(getTexture(TEXTURE_TROLL),new int[] {
+            /*   tm   x   y   w   h  cx  cy  sx  sy  sw  sh  fx  fy */
                 100,  1,  1, 18, 25,  9, 13,  6,  2,  6, 23, 20,  0,  // 0. Stand
-                1, 41,  1, 18, 25,  9, 13,  6,  2,  6, 23, 20,  0,  // 1. Walk
-                1,  1,  1, 18, 25,  9, 13,  6,  2,  6, 23, 20,  0,
+                  1, 41,  1, 18, 25,  9, 13,  6,  2,  6, 23, 20,  0,  // 1. Walk
+                  1,  1,  1, 18, 25,  9, 13,  6,  2,  6, 23, 20,  0,
                 100, 41,  1, 18, 25,  9, 13,  6,  2,  6, 23, 20,  0,  // 3. Jump/Fall
-            },new int[]{ 0,1,3, }),
+            },new int[]{ 0,1,3,4 }),
         };
 
         Texture t1 = getTexture(TEXTURE_TILES);
@@ -211,8 +215,7 @@ public class LadybirdGame extends GameBase {
                 @Override
                 public void handleHttpResponse(HttpResponse httpResponse) {
                     String response = httpResponse.getResultAsString();
-                    levels = com.eclipsesource.json.Json.parse(response).asObject();
-                    screen.showSplash(START,20,str.get("appName"));
+                    loadLevels(response);
                 }
 
                 @Override
@@ -225,8 +228,16 @@ public class LadybirdGame extends GameBase {
             });
         } else {
             FileHandle file = Gdx.files.internal("levels.json");
-            levels = com.eclipsesource.json.Json.parse(file.readString("UTF-8")).asObject();
+            loadLevels(file.readString("UTF-8"));
+        }
+    }
+
+    private void loadLevels(String data) {
+        try {
+            levels = Json.parse(data).asObject();
             screen.showSplash(START,20,str.get("appName"));
+        } catch(ParseException e) {
+            Gdx.app.error("loadLevels","parse json: "+e.getMessage());
         }
     }
 
@@ -288,21 +299,30 @@ public class LadybirdGame extends GameBase {
                 case NEXT_ROUND:
                     startLevel();
                     break;
+                case SHOW_HISCORE:
+                    requestHiScore("---",1);
+                    break;
             }
         }
+    }
+
+    public void requestHiScore(String name,int round) {
+        requestHiScore(name,round,0,0);
     }
 
     /**
      * Upload score to the http-server, and get rank and hiscores.
      */
-    public void uploadScore(String name,int round,int time,int score) {
+    public void requestHiScore(String name,int round,int time,int score) {
         try {
             name = URLEncoder.encode(name,"UTF-8");
         } catch(Exception ex) {
             name = "---";
         }
         String url = HOST_URL+"/score.php";
-        String content = "name="+name+"&round="+round+"&time="+time+"&score="+score;
+        String content = "name="+name+"&round="+round;
+        if(time>0) content += "&time="+time;
+        if(score>0) content += "&score="+score;
         HttpRequest httpGet = new HttpRequest(HttpMethods.GET);
         httpGet.setUrl(url);
         httpGet.setContent(content);
@@ -310,13 +330,26 @@ public class LadybirdGame extends GameBase {
             @Override
             public void handleHttpResponse(HttpResponse httpResponse) {
                 String response = httpResponse.getResultAsString();
-                Json json = new Json();
-                HiScore data = json.fromJson(HiScore.class,response);
-                screen.showHiScore(data);
+                try {
+                    JsonObject json = Json.parse(response).asObject();
+                    HiScore hiscore = new HiScore();
+                    hiscore.name = json.getString("name","---");
+                    hiscore.rank = json.getInt("rank",0);
+                    hiscore.round = json.getInt("round",0);
+                    hiscore.hiscore1 = json.getString("hiscore1","---: 0");
+                    hiscore.hiscore2 = json.getString("hiscore2","---: 0");
+                    hiscore.hiscore3 = json.getString("hiscore3","---: 0");
+                    hiscore.hiscore4 = json.getString("hiscore4","---: 0");
+                    screen.setHiScore(hiscore);
+                    screen.showScore();
+                } catch(ParseException e) {
+                    Gdx.app.error("requestHiScore","parse json: "+e.getMessage());
+                }
             }
 
             @Override
             public void failed(Throwable t) {
+                Gdx.app.error("requestHiScore","failed: "+t.getMessage());
                 LadybirdGame.this.startLevel();
             }
 

@@ -328,6 +328,10 @@ public abstract class GameObject extends Anim {
         return getCollisions(0,0,0,0,true);
     }
 
+    public List<GameObject> getCollisions(int hasFlags) {
+        return getCollisions(0,0,hasFlags,0,true);
+    }
+
     public List<GameObject> getCollisions(int x,int y,int hasFlags) {
         return getCollisions(x,y,hasFlags,0,true);
     }
@@ -516,7 +520,8 @@ public abstract class GameObject extends Anim {
     }
 
     private void setPosition(int x,int y) {
-        int w = getWidth(),h = getHeight();
+        int w = getWidth();
+        int h = getHeight();
         Rectangle s = getSolid();
         this.x = x;
         this.y = y;

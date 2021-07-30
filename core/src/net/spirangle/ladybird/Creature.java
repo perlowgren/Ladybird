@@ -33,8 +33,8 @@ public class Creature extends GameObject {
     @Override
     public void update() {
         int n;
-        if((stat&DEAD)!=0) n = 3;
-        else if((stat&MOBILE)!=0) n = 1;
+        if(isDead()) n = 3;
+        else if(isMobile()) n = 1;
         else n = 0;
         image.setAnimation(animationIndexByType[n][type],this);
         super.update();

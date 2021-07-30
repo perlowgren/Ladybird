@@ -351,6 +351,11 @@ public class GameScreen extends ScreenBase {
         return keyAction(keycode,false);
     }
 
+    @Override
+    public boolean keyTyped(char character) {
+        return true;
+    }
+
     public int getTouchAction(int x,int y) {
         x /= (int)zoom;
         y /= (int)zoom;
@@ -363,24 +368,28 @@ public class GameScreen extends ScreenBase {
 
     public boolean keyAction(int keycode,boolean active) {
         switch(keycode) {
+            default:
+                return false;
             case Keys.ESCAPE:
                 if(active) showSplash(START,20,GameBase.str.get("appName"));
-                return true;
+                break;
+            case Keys.SPACE:
+                if(active) LadybirdGame.getInstance().nextLevel();
+                break;
             case Keys.UP:
                 Player.keys[0] = active;
-                return true;
+                break;
             case Keys.DOWN:
                 Player.keys[1] = active;
-                return true;
-            case Keys.SPACE:
+                break;
             case Keys.RIGHT:
                 Player.keys[2] = active;
-                return true;
+                break;
             case Keys.LEFT:
                 Player.keys[5] = active;
-                return true;
+                break;
         }
-        return false;
+        return true;
     }
 
     public void drawString(String s,int x,int y) {
@@ -506,9 +515,13 @@ public class GameScreen extends ScreenBase {
     }
 
     public void showSplash(SplashScreenType splash,int splashTimer,String msg) {
+        showSplash(splash,splashTimer,msg,null);
+    }
+
+    public void showSplash(SplashScreenType splash,int splashTimer,String msg,Action action) {
         this.splash = splash;
         this.splashTimer = splashTimer;
-        showMessage(null,msg,splashTimer,null,true);
+        showMessage(null,msg,splashTimer,action,true);
     }
 
     public void paintSplash() {
@@ -541,17 +554,11 @@ public class GameScreen extends ScreenBase {
                     } else {
                         splash = IDLE;
                         hiscore = null;
-                        game.uploadScore(name,round,time,score);
+                        game.requestHiScore(name,round,time,score);
                     }
                     break;
                 case SCORE:
-                    showSplash(HISCORE,40,GameBase.str.format("round",round));
-                    showMessage(h2Font,GameBase.str.get("topRank"),40,null,false);
-                    showMessage(pFont,GameBase.str.format("topPlayers",
-                                                          hiscore.hiscore1,
-                                                          hiscore.hiscore2,
-                                                          hiscore.hiscore3,
-                                                          hiscore.hiscore4),40,null,false);
+                    showHiScore();
                     break;
                 case HISCORE:
                     splash = null;
@@ -587,12 +594,29 @@ public class GameScreen extends ScreenBase {
         showMessage(null,GameBase.str.format("completed",round),20,null,false);
     }
 
-    public void showHiScore(HiScore hs) {
-        hiscore = hs;
-        name = hiscore.name;
-        rank = hiscore.rank;
-        showSplash(SCORE,120,GameBase.str.format("round",round));
-        showMessage(h2Font,GameBase.str.format("score",name,score,timeFormat(time),rank),120,null,false);
+    public void setHiScore(HiScore hiscore) {
+        this.hiscore = hiscore;
+        this.name = hiscore.name;
+        this.rank = hiscore.rank;
+    }
+
+    public void showScore() {
+        showSplash(SCORE,60,GameBase.str.format("round",round));
+        showMessage(h2Font,GameBase.str.format("score",name,score,timeFormat(time),rank),60,null,false);
+    }
+
+    public void showHiScore() {
+        if(hiscore!=null) {
+            showSplash(HISCORE,60,GameBase.str.format("round",hiscore.round));
+            showMessage(h2Font,GameBase.str.get("topRank"),60,null,false);
+            showMessage(pFont,GameBase.str.format("topPlayers",
+                                                  hiscore.hiscore1,
+                                                  hiscore.hiscore2,
+                                                  hiscore.hiscore3,
+                                                  hiscore.hiscore4),60,null,false);
+        } else {
+            splash = null;
+        }
     }
 }
 

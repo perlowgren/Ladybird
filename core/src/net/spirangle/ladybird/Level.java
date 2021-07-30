@@ -19,7 +19,8 @@ public class Level {
     public enum Action {
         START_GAME,
         NEXT_LEVEL,
-        NEXT_ROUND;
+        NEXT_ROUND,
+        SHOW_HISCORE
     }
 
     private final GameScreen screen;
