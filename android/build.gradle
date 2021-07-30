@@ -1,4 +1,17 @@
 android {
+    signingConfigs {
+        release {
+            def localProperties = project.file("../local.properties")
+            if(localProperties.exists()) {
+                def properties = new Properties()
+                properties.load(new FileInputStream(localProperties))
+                storeFile file(properties.getProperty('keystore.file'))
+                storePassword properties.getProperty('keystore.password')
+                keyAlias properties.getProperty('keystore.keyAlias')
+                keyPassword properties.getProperty('keystore.keyPassword')
+            }
+        }
+    }
     buildToolsVersion "30.0.3"
     compileSdkVersion 30
     sourceSets {
@@ -27,6 +40,7 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
@@ -71,10 +85,8 @@ task run(type: Exec) {
     def path
     def localProperties = project.file("../local.properties")
     if (localProperties.exists()) {
-        Properties properties = new Properties()
-        localProperties.withInputStream { instr ->
-            properties.load(instr)
-        }
+        def properties = new Properties()
+        properties.load(new FileInputStream(localProperties))
         def sdkDir = properties.getProperty('sdk.dir')
         if (sdkDir) {
             path = sdkDir
