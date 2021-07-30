@@ -235,7 +235,8 @@ public class LadybirdGame extends GameBase {
     private void loadLevels(String data) {
         try {
             levels = Json.parse(data).asObject();
-            screen.showSplash(START,20,str.get("appName"));
+            screen.showSplash(START,60,str.get("appName"));
+            screen.showMessage(FONT_PROFONT12W,GameBase.str.get("instructions"),60,null,false);
         } catch(ParseException e) {
             Gdx.app.error("loadLevels","parse json: "+e.getMessage());
         }
