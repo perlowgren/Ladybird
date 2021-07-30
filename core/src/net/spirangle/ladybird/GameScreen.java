@@ -454,6 +454,11 @@ public class GameScreen extends ScreenBase {
         return messageTimer>0;
     }
 
+    public void showMessage(int font,String text,int timer,Action action,boolean clear) {
+        BitmapFont f = LadybirdGame.getInstance().getFont(font);
+        showMessage(f,text,timer,action,clear);
+    }
+
     public void showMessage(BitmapFont font,String text,int timer,Action action,boolean clear) {
         if(text==null || timer<=0) clear = true;
         if(clear) clearMessage();
