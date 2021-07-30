@@ -11,7 +11,7 @@ public class Item extends GameObject {
     }
 
     @Override
-    public boolean hit(int verticalForce) {
+    public boolean hit(int xForce,int yForce) {
         return false;
     }
 }

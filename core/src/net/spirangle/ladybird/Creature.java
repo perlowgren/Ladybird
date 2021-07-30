@@ -1,6 +1,7 @@
 package net.spirangle.ladybird;
 
 import static net.spirangle.ladybird.GameScreen.LAYERS;
+import static net.spirangle.ladybird.LadybirdGame.SOUND_CREATURE_DEAD;
 import static net.spirangle.ladybird.LadybirdGame.SOUND_CREATURE_HIT;
 
 public class Creature extends GameObject {
@@ -15,15 +16,17 @@ public class Creature extends GameObject {
     }
 
     @Override
-    public boolean hit(int verticalForce) {
+    public boolean hit(int xForce,int yForce) {
         if(isDead()) return false;
+        LadybirdGame.getInstance().playSound(SOUND_CREATURE_HIT);
         if(--life<=0) {
             life = 0;
             setDead(true);
             z = LAYERS-1;
-            if(verticalForce>=-1) jump = verticalForce;
+            speed = xForce;
+            jump = yForce;
+            LadybirdGame.getInstance().playSound(SOUND_CREATURE_DEAD);
         }
-        LadybirdGame.getInstance().playSound(SOUND_CREATURE_HIT);
         return true;
     }
 

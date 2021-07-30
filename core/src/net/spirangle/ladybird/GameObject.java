@@ -392,13 +392,13 @@ public abstract class GameObject extends Anim {
     public void hitTarget(GameObject target) {
     }
 
-    public boolean hit(int verticalForce) {
+    public boolean hit(int xForce,int yForce) {
         return true;
     }
 
     public void update() {
         if(isDead()) {
-            move(0,-jump,true);
+            move(speed,-jump,true);
             if(jump>-8) --jump;
             if(!level.isVisible(space)) delete();
             return;

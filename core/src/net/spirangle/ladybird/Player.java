@@ -107,9 +107,9 @@ public class Player extends Creature {
     }
 
     @Override
-    public boolean hit(int verticalForce) {
+    public boolean hit(int xForce,int yForce) {
         if(isDead()) return false;
-        if(verticalForce>=-1) jump = verticalForce;
+        if(yForce!=0) jump = yForce;
         z = LAYERS-1;
         setDead(true);
         LadybirdGame.getInstance().playSound(SOUND_TROLL_HIT);
@@ -220,11 +220,11 @@ public class Player extends Creature {
         }
 
         if((objList=getCollisions())!=null) {
-            // Check if hit by a monster or projectile:
+            // Check if hit by a monster:
             for(GameObject o : objList)
                 if(o.isAggro() && !o.isDead()) {
-                    o.hit(-1);
-                    hit(3);
+                    o.hit(0,-1);
+                    hit(0,3);
                     break;
                 }
 
@@ -240,7 +240,7 @@ public class Player extends Creature {
             move((border.x+border.width)-(solid.x+solid.width),0,true);
         // Killed if moves below level border bottom:
         if(solid.y+solid.height>border.height)
-            hit(-2);
+            hit(0,-2);
 
         if(isDead()) n = 3;
         else if(isJumping()) n = 2;
