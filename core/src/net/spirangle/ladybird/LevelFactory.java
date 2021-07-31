@@ -1,206 +1,261 @@
 package net.spirangle.ladybird;
 
-public class LevelFactory implements Data {
+import static net.spirangle.ladybird.GameObject.*;
+import static net.spirangle.ladybird.GameObject.Effect.*;
 
-	private static final int levels[][][] = {
-		{
-			{ 0xc8c8ff,   MUSIC_SUNNY_DAY, 200, 250,   1  },
-			{   10, 190, 3, PLAYER,   TROLL,   P1   },	// Player
-			{   90, 195, 1, ITEM,     CHEST,   IG1  }, {  155,  95, 1, ITEM,     APPLE,   BA1  }, {  100, 195, 1, ITEM,     BOTTLE_O,BP1  }, {  110, 195, 1, ITEM,     BOTTLE_V,BS1  },
-			{  135, 185, 2, TILE,     HFLAT,   T1   }, {  150, 170, 2, TILE,     HFLAT,   T1   }, {  100, 145, 2, TILE,     HFLAT,   T1   }, {   75, 120, 2, TILE,     HFLAT,   T1   },
-			{   75, 165, 2, TILE,     HFLAT,   T1   }, {  125, 115, 2, TILE,     HFLAT,   T1   }, {  150, 100, 2, TILE,     HFLAT,   T1   }, {  150, 195, 2, TILE,     BLOCK,   T1   },
-			{  150, 180, 2, TILE,     BLOCK,   T1   }, {  175, 170, 2, TILE,     BLOCK,   T1   }, {   90, 130, 2, TILE,     BLOCK,   T1   }, {   90, 140, 2, TILE,     BLOCK,   T1   },
-			{   90, 150, 2, TILE,     BLOCK,   T1   }, {   90, 160, 2, TILE,     BLOCK,   T1   }, {  160, 195, 4, TILE,     DOOR,    TE1  }, {  120, 190, 6, TILE,     BUSH,    T1   },
-			{   60, 125, 6, TILE,     BUSH,    T1   }, {  150, 165, 5, CREATURE, BOOGIE,  CU2  },
-			{    0, 200, 2, TILE,     HFLAT,   T1   }, {   25, 200, 2, TILE,     HFLAT,   T1   }, {   50, 200, 2, TILE,     HFLAT,   T1   }, {   75, 200, 2, TILE,     HFLAT,   T1   },
-			{  100, 200, 2, TILE,     HFLAT,   T1   }, {  125, 200, 2, TILE,     HFLAT,   T1   }, {  150, 200, 2, TILE,     HFLAT,   T1   }, {  175, 200, 2, TILE,     HFLAT,   T1   },
-			{    0, 225, 2, TILE,     BLOCK2,  T1   }, {   25, 225, 2, TILE,     BLOCK2,  T1   }, {   50, 225, 2, TILE,     BLOCK2,  T1   }, {   75, 225, 2, TILE,     BLOCK2,  T1   },
-			{  100, 225, 2, TILE,     BLOCK2,  T1   }, {  125, 225, 2, TILE,     BLOCK2,  T1   }, {  150, 225, 2, TILE,     BLOCK2,  T1   }, {  175, 225, 2, TILE,     BLOCK2,  T1   },
-			{    0, 250, 2, TILE,     BLOCK3,  T1   }, {   25, 250, 2, TILE,     BLOCK3,  T1   }, {   50, 250, 2, TILE,     BLOCK3,  T1   }, {   75, 250, 2, TILE,     BLOCK3,  T1   },
-			{  100, 250, 2, TILE,     BLOCK3,  T1   }, {  125, 250, 2, TILE,     BLOCK3,  T1   }, {  150, 250, 2, TILE,     BLOCK3,  T1   }, {  175, 250, 2, TILE,     BLOCK3,  T1   },
-		},{
-			{ 0x969664,  MUSIC_NONE, 200, 250,   2  },
-			{   10,  25, 3, PLAYER,   TROLL,   P2   },	// Player
-			{    0,  35, 2, TILE,     HFLAT,   T1   }, {   25,  35, 2, TILE,     HFLAT,   T1   }, {  100,  90, 2, TILE,     HFLAT,   T1   }, {  125,  90, 2, TILE,     HFLAT,   T1   },
-			{  125,  60, 2, TILE,     HFLAT,   T1   }, {  150, 120, 2, TILE,     HFLAT,   T1   }, {    0,  65, 2, TILE,     HFLAT,   T1   }, {   40,  45, 2, TILE,     BLOCK,   T1   },
-			{   50,  55, 2, TILE,     BLOCK,   T1   }, {   60,  65, 2, TILE,     BLOCK,   T1   }, {   70,  75, 2, TILE,     BLOCK,   T1   }, {   80,  85, 2, TILE,     BLOCK,   T1   },
-			{   90,  85, 2, TILE,     BLOCK,   T1   }, {  100,  85, 2, TILE,     BLOCK,   T1   }, {  150,  65, 2, TILE,     BLOCK,   T1   }, {  150,  75, 2, TILE,     BLOCK,   T1   },
-			{  150,  85, 2, TILE,     BLOCK,   T1   }, {  150,  95, 2, TILE,     BLOCK,   T1   }, {  150, 105, 2, TILE,     BLOCK,   T1   }, {  150, 115, 2, TILE,     BLOCK,   T1   },
-			{   15,  75, 2, TILE,     BLOCK,   T1   }, {   25,  85, 2, TILE,     BLOCK,   T1   }, {   35,  95, 2, TILE,     BLOCK,   T1   }, {   45, 105, 2, TILE,     BLOCK,   T1   },
-			{   55, 115, 2, TILE,     BLOCK,   T1   }, {   65, 125, 2, TILE,     BLOCK,   T1   }, {   75, 135, 2, TILE,     BLOCK,   T1   }, {   85, 145, 2, TILE,     BLOCK,   T1   },
-			{   95, 155, 2, TILE,     BLOCK,   T1   }, {  105, 165, 2, TILE,     BLOCK,   T1   }, {  115, 175, 2, TILE,     BLOCK,   T1   }, {  125, 185, 2, TILE,     BLOCK,   T1   },
-			{  135, 195, 2, TILE,     BLOCK,   T1   }, {  140,  85, 1, ITEM,     CHEST,   IG1  }, {  190, 195, 1, ITEM,     CHEST,   IG1  }, {    0,  60, 4, TILE,     DOOR,    TE1  },
-			{  130,  55, 5, CREATURE, BOOGIE,  CU2  }, {  190, 145, 5, CREATURE, BOOGIE,  CL1  },
-			{    0, 200, 2, TILE,     HFLAT,   T1   }, {   25, 200, 2, TILE,     HFLAT,   T1   }, {   50, 200, 2, TILE,     HFLAT,   T1   }, {   75, 200, 2, TILE,     HFLAT,   T1   },
-			{  100, 200, 2, TILE,     HFLAT,   T1   }, {  125, 200, 2, TILE,     HFLAT,   T1   }, {  150, 200, 2, TILE,     HFLAT,   T1   }, {  175, 200, 2, TILE,     HFLAT,   T1   },
-			{    0, 225, 2, TILE,     BLOCK2,  T1   }, {   25, 225, 2, TILE,     BLOCK2,  T1   }, {   50, 225, 2, TILE,     BLOCK2,  T1   }, {   75, 225, 2, TILE,     BLOCK2,  T1   },
-			{  100, 225, 2, TILE,     BLOCK2,  T1   }, {  125, 225, 2, TILE,     BLOCK2,  T1   }, {  150, 225, 2, TILE,     BLOCK2,  T1   }, {  175, 225, 2, TILE,     BLOCK2,  T1   },
-			{    0, 250, 2, TILE,     BLOCK3,  T1   }, {   25, 250, 2, TILE,     BLOCK3,  T1   }, {   50, 250, 2, TILE,     BLOCK3,  T1   }, {   75, 250, 2, TILE,     BLOCK3,  T1   },
-			{  100, 250, 2, TILE,     BLOCK3,  T1   }, {  125, 250, 2, TILE,     BLOCK3,  T1   }, {  150, 250, 2, TILE,     BLOCK3,  T1   }, {  175, 250, 2, TILE,     BLOCK3,  T1   },
-		},{
-			{ 0x969664,  MUSIC_NONE, 200, 250,   3  },
-			{   50,  60, 3, PLAYER,   TROLL,   P3   },	// Player
-			{  170, 175, 1, ITEM,     CHEST,   IG1  }, {  185,  30, 1, ITEM,     CHEST,   IG1  }, {  175, 110, 2, TILE,     HFLAT,   TU1  }, {    0,  30, 2, TILE,     HFLAT,   T1   },
-			{   25,  35, 2, TILE,     HFLAT,   T1   }, {   70,  35, 2, TILE,     HFLAT,   T1   }, {   95,  35, 2, TILE,     HFLAT,   T1   }, {  120,  35, 2, TILE,     HFLAT,   T1   },
-			{  175,  35, 2, TILE,     HFLAT,   T1   }, {   40,  80, 2, TILE,     HFLAT,   T1   }, {   65,  80, 2, TILE,     HFLAT,   T1   }, {    0, 135, 2, TILE,     HFLAT,   T1   },
-			{   25, 135, 2, TILE,     HFLAT,   T1   }, {   40, 165, 2, TILE,     HFLAT,   T1   }, {   65, 165, 2, TILE,     HFLAT,   T1   }, {   80, 110, 2, TILE,     HFLAT,   T1   },
-			{   80, 150, 2, TILE,     HFLAT,   T1   }, {  105, 150, 2, TILE,     HFLAT,   T1   }, {  165, 180, 2, TILE,     HFLAT,   T1   }, {   70,  45, 2, TILE,     BLOCK,   T1   },
-			{   70,  55, 2, TILE,     BLOCK,   T1   }, {   70,  65, 2, TILE,     BLOCK,   T1   }, {   70,  75, 2, TILE,     BLOCK,   T1   }, {   80,  75, 2, TILE,     BLOCK,   T1   },
-			{   90,  80, 2, TILE,     BLOCK,   T1   }, {  135,  45, 2, TILE,     BLOCK,   T1   }, {  145,  55, 2, TILE,     BLOCK,   T1   }, {  155,  65, 2, TILE,     BLOCK,   T1   },
-			{  155,  75, 2, TILE,     BLOCK,   T1   }, {  165,  75, 2, TILE,     BLOCK,   T1   }, {  145,  85, 2, TILE,     BLOCK,   T1   }, {   20,  95, 2, TILE,     BLOCK,   T1   },
-			{   30,  85, 2, TILE,     BLOCK,   T1   }, {  135,  95, 2, TILE,     BLOCK,   T1   }, {  125,  95, 2, TILE,     BLOCK,   T1   }, {  130, 105, 2, TILE,     BLOCK,   T1   },
-			{  130, 115, 2, TILE,     BLOCK,   T1   }, {  130, 125, 2, TILE,     BLOCK,   T1   }, {  130, 135, 2, TILE,     BLOCK,   T1   }, {  130, 145, 2, TILE,     BLOCK,   T1   },
-			{  140, 135, 2, TILE,     BLOCK,   T1   }, {   50, 135, 2, TILE,     BLOCK,   T1   }, {   60, 125, 2, TILE,     BLOCK,   T1   }, {   70, 115, 2, TILE,     BLOCK,   T1   },
-			{  190,  95, 2, TILE,     BLOCK,   T1   }, {   20, 170, 2, TILE,     BLOCK,   T1   }, {   30, 170, 2, TILE,     BLOCK,   T1   }, {   80, 160, 2, TILE,     BLOCK,   T1   },
-			{  100, 195, 2, TILE,     BLOCK,   T1   }, {  110, 195, 2, TILE,     BLOCK,   T1   }, {  120, 195, 2, TILE,     BLOCK,   T1   }, {  190, 180, 2, TILE,     BLOCK,   T1   },
-			{   80,  65, 1, ITEM,     APPLE,   BA1  }, {    5, 195, 1, ITEM,     CHEST,   IG1  }, {    0,  25, 4, TILE,     DOOR,    TE1  }, {    0,  75, 5, CREATURE, BOOGIE,  CU1  },
-			{  105,  85, 5, CREATURE, BOOGIE,  CU2  }, {  110, 170, 5, CREATURE, BOOGIE,  CL1  },
-			{    0, 200, 2, TILE,     HFLAT,   T1   }, {   25, 200, 2, TILE,     HFLAT,   T1   }, {   50, 200, 2, TILE,     HFLAT,   T1   }, {   75, 200, 2, TILE,     HFLAT,   T1   },
-			{  100, 200, 2, TILE,     HFLAT,   T1   }, {  125, 200, 2, TILE,     HFLAT,   T1   }, {  150, 200, 2, TILE,     HFLAT,   T1   }, {  175, 200, 2, TILE,     HFLAT,   T1   },
-			{    0, 225, 2, TILE,     BLOCK2,  T1   }, {   25, 225, 2, TILE,     BLOCK2,  T1   }, {   50, 225, 2, TILE,     BLOCK2,  T1   }, {   75, 225, 2, TILE,     BLOCK2,  T1   },
-			{  100, 225, 2, TILE,     BLOCK2,  T1   }, {  125, 225, 2, TILE,     BLOCK2,  T1   }, {  150, 225, 2, TILE,     BLOCK2,  T1   }, {  175, 225, 2, TILE,     BLOCK2,  T1   },
-			{    0, 250, 2, TILE,     BLOCK3,  T1   }, {   25, 250, 2, TILE,     BLOCK3,  T1   }, {   50, 250, 2, TILE,     BLOCK3,  T1   }, {   75, 250, 2, TILE,     BLOCK3,  T1   },
-			{  100, 250, 2, TILE,     BLOCK3,  T1   }, {  125, 250, 2, TILE,     BLOCK3,  T1   }, {  150, 250, 2, TILE,     BLOCK3,  T1   }, {  175, 250, 2, TILE,     BLOCK3,  T1   },
-		},{
-			{ 0xc8c8ff,   MUSIC_SUNNY_DAY, 200, 250,   4  },
-			{   10, 185, 3, PLAYER,   TROLL,   P3   },	// Player
-			{    0, 195, 2, TILE,     HFLAT,   TU1  }, {    0,  40, 2, TILE,     HFLAT,   T1   }, {   70,  55, 2, TILE,     HFLAT,   T1   }, {  160,  55, 2, TILE,     HFLAT,   T1   },
-			{   60,  80, 2, TILE,     HFLAT,   T1   }, {  175,  80, 2, TILE,     HFLAT,   T1   }, {   40, 105, 2, TILE,     HFLAT,   T1   }, {  120,  90, 2, TILE,     HFLAT,   T1   },
-			{   55, 120, 2, TILE,     HFLAT,   T1   }, {   80, 120, 2, TILE,     HFLAT,   T1   }, {  135, 135, 2, TILE,     HFLAT,   T1   }, {   55, 165, 2, TILE,     HFLAT,   T1   },
-			{  125, 170, 2, TILE,     HFLAT,   T1   }, {  150, 170, 2, TILE,     HFLAT,   T1   }, {  175, 170, 2, TILE,     HFLAT,   T1   }, {   40, 185, 2, TILE,     HFLAT,   T1   },
-			{   75,  10, 2, TILE,     BLOCK,   T1   }, {   15,  35, 2, TILE,     BLOCK,   T1   }, {   15,  50, 2, TILE,     BLOCK,   T1   }, {   25,  60, 2, TILE,     BLOCK,   T1   },
-			{   75,  65, 2, TILE,     BLOCK,   T1   }, {   75,  75, 2, TILE,     BLOCK,   T1   }, {  175,  65, 2, TILE,     BLOCK,   T1   }, {  175,  75, 2, TILE,     BLOCK,   T1   },
-			{   60,  90, 2, TILE,     BLOCK,   T1   }, {   55, 100, 2, TILE,     BLOCK,   T1   }, {   55, 115, 2, TILE,     BLOCK,   T1   }, {  120,  75, 2, TILE,     BLOCK,   T1   },
-			{  120,  85, 2, TILE,     BLOCK,   T1   }, {  115, 100, 2, TILE,     BLOCK,   T1   }, {  115, 110, 2, TILE,     BLOCK,   T1   }, {  105, 120, 2, TILE,     BLOCK,   T1   },
-			{  190,  90, 2, TILE,     BLOCK,   T1   }, {  190, 100, 2, TILE,     BLOCK,   T1   }, {  135, 145, 2, TILE,     BLOCK,   T1   }, {  125, 155, 2, TILE,     BLOCK,   T1   },
-			{  125, 165, 2, TILE,     BLOCK,   T1   }, {  115, 170, 2, TILE,     BLOCK,   T1   }, {  190, 155, 2, TILE,     BLOCK,   T1   }, {  190, 165, 2, TILE,     BLOCK,   T1   },
-			{   45, 160, 2, TILE,     BLOCK,   T1   }, {   45, 170, 2, TILE,     BLOCK,   T1   }, {   45, 180, 2, TILE,     BLOCK,   T1   }, {   40, 195, 2, TILE,     BLOCK,   T1   },
-			{   90, 185, 2, TILE,     BLOCK,   T1   }, {   90, 195, 2, TILE,     BLOCK,   T1   }, {    0,  35, 1, ITEM,     APPLE,   BA1  }, {  155, 165, 1, ITEM,     BOTTLE_O,BP1  },
-			{   85,  50, 1, ITEM,     CHEST,   IG1  }, {  190,  75, 1, ITEM,     CHEST,   IG1  }, {  145, 165, 1, ITEM,     CHEST,   IG1  }, {  185, 195, 1, ITEM,     CHEST,   IG1  },
-			{   65, 115, 4, TILE,     DOOR,    TE1  }, {   40,  90, 5, CREATURE, BOOGIE,  CU2  }, {  180,  25, 5, CREATURE, BOOGIE,  CL1  }, {  180, 195, 5, CREATURE, GRULL,   CL1  },
-			{   95,  60, 6, TILE,     BUSH,    T1   }, {  145,  60, 6, TILE,     BUSH,    T1   }, {   85,  85, 6, TILE,     BUSH,    T1   }, {  145,  95, 6, TILE,     BUSH,    T1   },
-			{   30, 120, 6, TILE,     BUSH,    T1   }, {    0, 140, 6, TILE,     BUSH,    T1   }, {  160, 140, 6, TILE,     BUSH,    T1   }, {   80, 170, 6, TILE,     BUSH,    T1   },
-			{   65, 190, 6, TILE,     BUSH,    T1   },
-			{    0, 200, 2, TILE,     HFLAT,   T1   }, {   25, 200, 2, TILE,     HFLAT,   T1   }, {   50, 200, 2, TILE,     HFLAT,   T1   }, {   75, 200, 2, TILE,     HFLAT,   T1   },
-			{  100, 200, 2, TILE,     HFLAT,   T1   }, {  125, 200, 2, TILE,     HFLAT,   T1   }, {  150, 200, 2, TILE,     HFLAT,   T1   }, {  175, 200, 2, TILE,     HFLAT,   T1   },
-			{    0, 225, 2, TILE,     BLOCK2,  T1   }, {   25, 225, 2, TILE,     BLOCK2,  T1   }, {   50, 225, 2, TILE,     BLOCK2,  T1   }, {   75, 225, 2, TILE,     BLOCK2,  T1   },
-			{  100, 225, 2, TILE,     BLOCK2,  T1   }, {  125, 225, 2, TILE,     BLOCK2,  T1   }, {  150, 225, 2, TILE,     BLOCK2,  T1   }, {  175, 225, 2, TILE,     BLOCK2,  T1   },
-			{    0, 250, 2, TILE,     BLOCK3,  T1   }, {   25, 250, 2, TILE,     BLOCK3,  T1   }, {   50, 250, 2, TILE,     BLOCK3,  T1   }, {   75, 250, 2, TILE,     BLOCK3,  T1   },
-			{  100, 250, 2, TILE,     BLOCK3,  T1   }, {  125, 250, 2, TILE,     BLOCK3,  T1   }, {  150, 250, 2, TILE,     BLOCK3,  T1   }, {  175, 250, 2, TILE,     BLOCK3,  T1   },
-		},{
-			{ 0xc8c8ff,   MUSIC_SUNNY_DAY, 200, 250,   4  },
-			{  125, 215, 3, PLAYER,   TROLL,   P3   },	// Player
-			{   55,  40, 2, TILE,     HFLAT,   T1   }, {    0,  90, 2, TILE,     HFLAT,   T1   }, {   65,  95, 2, TILE,     HFLAT,   T1   }, {   50, 150, 2, TILE,     HFLAT,   T1   },
-			{  115, 145, 2, TILE,     HFLAT,   T1   }, {  100, 175, 2, TILE,     HFLAT,   T1   }, {  125, 175, 2, TILE,     HFLAT,   T1   }, {   20, 200, 2, TILE,     HFLAT,   T1   },
-			{   30, 215, 2, TILE,     HFLAT,   T1   }, {   55, 215, 2, TILE,     HFLAT,   T1   }, {  125, 230, 2, TILE,     HFLAT,   T1   }, {  150, 220, 2, TILE,     HFLAT,   T1   },
-			{  175, 130, 2, TILE,     HFLAT,   T1   }, {   70,  50, 2, TILE,     BLOCK,   T1   }, {   70,  60, 2, TILE,     BLOCK,   T1   }, {   70,  70, 2, TILE,     BLOCK,   T1   },
-			{   70,  80, 2, TILE,     BLOCK,   T1   }, {   70,  90, 2, TILE,     BLOCK,   T1   }, {    0, 100, 2, TILE,     BLOCK,   T1   }, {    0, 110, 2, TILE,     BLOCK,   T1   },
-			{    0, 120, 2, TILE,     BLOCK,   T1   }, {   80, 105, 2, TILE,     BLOCK,   T1   }, {   80, 115, 2, TILE,     BLOCK,   T1   }, {   20, 145, 2, TILE,     BLOCK,   T1   },
-			{    0, 165, 2, TILE,     BLOCK,   T1   }, {   20, 185, 2, TILE,     BLOCK,   T1   }, {   20, 210, 2, TILE,     BLOCK,   T1   }, {   20, 220, 2, TILE,     BLOCK,   T1   },
-			{   20, 230, 2, TILE,     BLOCK,   T1   }, {   20, 240, 2, TILE,     BLOCK,   T1   }, {   20, 250, 2, TILE,     BLOCK,   T1   }, {   50, 160, 2, TILE,     BLOCK,   T1   },
-			{   50, 170, 2, TILE,     BLOCK,   T1   }, {  105, 135, 2, TILE,     BLOCK,   T1   }, {  105, 150, 2, TILE,     BLOCK,   T1   }, {  105, 160, 2, TILE,     BLOCK,   T1   },
-			{  105, 170, 2, TILE,     BLOCK,   T1   }, {  150, 180, 2, TILE,     BLOCK,   T1   }, {  150, 190, 2, TILE,     BLOCK,   T1   }, {  150, 230, 2, TILE,     BLOCK,   T1   },
-			{  150, 240, 2, TILE,     BLOCK,   T1   }, {  150, 250, 2, TILE,     BLOCK,   T1   }, {  190, 140, 2, TILE,     BLOCK,   T1   }, {  190, 150, 2, TILE,     BLOCK,   T1   },
-			{  190, 160, 2, TILE,     BLOCK,   T1   }, {  190, 170, 2, TILE,     BLOCK,   T1   }, {    5,  30, 1, ITEM,     HEART,   BL1  }, {    5,  85, 1, ITEM,     CHEST,   IG1  },
-			{   60, 145, 1, ITEM,     CHEST,   IG1  }, {  180, 125, 1, ITEM,     CHEST,   IG1  }, {  160, 215, 1, ITEM,     CHEST,   IG1  }, {  115, 170, 4, TILE,     DOOR,    TE1  },
-			{   60, 210, 5, CREATURE, BOOGIE,  CU2  }, {   30, 185, 5, CREATURE, BOOGIE,  CU2  }, {  180, 125, 5, CREATURE, BOOGIE,  CU2  }, {   40,  45, 6, TILE,     BUSH,    T1   },
-			{   25,  95, 6, TILE,     BUSH,    T1   }, {   50, 100, 6, TILE,     BUSH,    T1   }, {  160, 135, 6, TILE,     BUSH,    T1   }, {   75, 155, 6, TILE,     BUSH,    T1   },
-			{   45, 205, 6, TILE,     BUSH,    T1   }, {   80, 220, 6, TILE,     BUSH,    T1   }, {  110, 235, 6, TILE,     BUSH,    T1   }, {  175, 225, 6, TILE,     BUSH,    T1   },
-			{  100,  45, 6, TILE,     CLOUD,   TL1  }, {   80,  75, 6, TILE,     CLOUD,   TL1  }, {  115, 115, 6, TILE,     CLOUD,   TL1  }, {    0,  40, 6, TILE,     CLOUD,   T1   },
-			{  125,  45, 6, TILE,     CLOUD,   T1   }, {  165,  60, 6, TILE,     CLOUD,   T1   }, {  150,  75, 6, TILE,     CLOUD,   T1   }, {  140, 115, 6, TILE,     CLOUD,   T1   },
-			{  155, 105, 1, ITEM,     BOTTLE_O,BP1  },
-		}
-	};
+import com.badlogic.gdx.Gdx;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
-	public static final int playerData[][] = {
-		/* 0=action, 1=speed, 2=power, 3=jump, 4=chests, 5=life, 6=ammo, 7=stat */
-		{ 0, 2, 6, 0, 0, 5, 0, MOVING      }, /* P1: Player - first level */
-		{ 0, 2, 6, 0, 0, 0, 0, MOVING      }, /* P2: Player - facing right */
-		{ 0, 2, 6, 0, 0, 0, 0, MOVING|FLIP }, /* P3: Player - facing left */
-	};
+import java.util.HashMap;
+import java.util.Map;
 
-	public static final int creatureData[][] = {
-		/* 0=action, 1=speed, 2=effect, 3=value, 4=life, 5=stat */
-		{ 0,     0, 0,     0, 2, AGGRO             }, /* C1:  Creature - standing, facing right */
-		{ 0,     0, 0,     0, 2, AGGRO|FLIP        }, /* C2:  Creature - standing, facing left */
-		{ LEFT,  1, 0,     0, 2, AGGRO|MOBILE|FLIP }, /* CL1: Creature - move left, facing left */
-		{ RIGHT, 1, 0,     0, 2, AGGRO|MOBILE      }, /* CR1: Creature - move right, facing right */
-		{ UP,    1, 0,     0, 2, AGGRO|MOBILE      }, /* CU1: Creature - move up, facing right */
-		{ UP,    1, 0,     0, 2, AGGRO|MOBILE|FLIP }, /* CU2: Creature - move up, facing left */
-		{ DOWN,  1, 0,     0, 2, AGGRO|MOBILE      }, /* CD1: Creature - move down, facing right */
-		{ DOWN,  1, 0,     0, 2, AGGRO|MOBILE|FLIP }, /* CD2: Creature - move down, facing left */
-	};
+public class LevelFactory {
 
-	public static final int tileData[][] = {
-		/* 0=action, 1=speed, 2=effect, 3=value, 4=life, 5=stat */
-		{ 0,     0, 0,     0, 0, SOLID             }, /* T1:  Tile - solid */
-		{ LEFT,  1, 0,     0, 0, SOLID|MOBILE      }, /* TL1: Tile - solid, move left */
-		{ RIGHT, 1, 0,     0, 0, SOLID|MOBILE      }, /* TR1: Tile - solid, move right */
-		{ UP,    1, 0,     0, 0, SOLID|MOBILE      }, /* TU1: Tile - solid, move up */
-		{ DOWN,  1, 0,     0, 0, SOLID|MOBILE      }, /* TD1: Tile - solid, move down */
-		{ 0,     0, EXIT,  0, 0, BUFF              }, /* TE1: Tile - buff: level exit */
-	};
+    public static final int TILE               = 0;
+    public static final int ITEM               = 1;
+    public static final int CREATURE           = 2;
+    public static final int PLAYER             = 3;
+    public static final int PROJECTILE         = 4;
 
-	public static final int itemData[][] = {
-		/* 0=action, 1=speed, 2=effect, 3=value, 4=life, 5=stat */
-		{ 0,     0, GOLD,  1, 0, BUFF              }, /* IG1: Item - buff: gold */
-		{ 0,     0, LIFE,  1, 0, BUFF              }, /* BL1: Item - buff: life */
-		{ 0,     0, AMMO,  5, 0, BUFF              }, /* BA1: Item - buff: ammo */
-		{ 0,     0, POWER, 1, 0, BUFF              }, /* BP1: Item - buff: power*/
-		{ 0,     0, SPEED, 1, 0, BUFF              }, /* BS1: Item - buff: speed */
-	};
+    public enum GameObjectTemplate {
+        HFLAT(0,0,0,2,"T1"),
+        VFLAT(1,0,0,2,"T1"),
+        BLOCK(2,0,0,2,"T1"),
+        BLOCK2(3,0,0,2,"T1"),
+        BLOCK3(4,0,0,2,"T1"),
+        BUSH(5,0,0,6,"T1"),
+        CLOUD(6,0,0,6,"T1"),
+        DOOR(7,0,0,4,"TE1"),
+        HEART(8,0,0,1,"BL1"),
+        APPLE(9,0,0,1,"BA1"),
+        CHEST(10,0,0,1,"IG1"),
+        BOTTLE(11,0,0,1,"BP1"),
+        BOTTLE_G(11,0,0,1,"BP1"),
+        BOTTLE_V(12,0,0,1,"BS1"),
+        BOTTLE_O(13,0,0,1,"BP1"),
+        BOTTLE_B(14,0,0,1,"BP1"),
+        BOOGIE(15,0,0,5,"CL1"),
+        GRULL(16,0,0,5,"CL1"),
+        TROLL(17,0,0,3,"P1");
 
-	private LevelFactory() {}
+        public int index;
+        public int x;
+        public int y;
+        public int z;
+        public String data;
 
-	public static int getMaxLevels() { return levels.length; }
+        GameObjectTemplate(int index,int x,int y,int z,String data) {
+            this.index = index;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.data = data;
+        }
+    }
 
-	public static Level createLevel(Main g,int l) {
-Main.log("LevelFactory.createLevel(1)");
-		if(l<0 || l>=levels.length) l = 0;
-		Player player = g.getPlayer();
-		int lvl[][] = levels[l];
-		int data[] = lvl[0],item[];
-		Level tl = new Level(g,data[0],data[1],data[2],data[3],l);
-		GameObject to;
-		for(int i=1; i<lvl.length; ++i) {
-			item = lvl[i];
-			to = createObject(g,tl,item[3],item[0],item[1],item[2],item[4],item[5]);
-			tl.addObject(to);
-		}
-		player.setCollect(data[4]);
-		System.gc();
-Main.log("LevelFactory.createLevel(2)");
-		return tl;
-	}
+    public enum PlayerTemplate {
+        P1(0,2,6,0,0,5,0,MOVING,"first level"),
+        P2(0,2,6,0,0,0,0,MOVING,"facing right"),
+        P3(0,2,6,0,0,0,0,MOVING|FLIP,"facing left");
 
-	public static GameObject createObject(Main g,Level l,int c,int x,int y,int z,int t,int d) {
-		GameObject to;
-		if(l==null) l = g.getLevel();
-		switch(c) {
-			case TILE:
-				to = new Tile(g,l,x,y,z,t);
-				to.setData(tileData[d]);
-				break;
+        public int action;
+        public int speed;
+        public int power;
+        public int jump;
+        public int chests;
+        public int life;
+        public int ammo;
+        public int stat;
+        public String descr;
 
-			case ITEM:
-				to = new Item(g,l,x,y,z,t);
-				to.setData(itemData[d]);
-				break;
+        PlayerTemplate(int action,int speed,int power,int jump,int chests,int life,int ammo,int stat,String descr) {
+            this.action = action;
+            this.speed = speed;
+            this.power = power;
+            this.jump = jump;
+            this.chests = chests;
+            this.life = life;
+            this.ammo = ammo;
+            this.stat = stat;
+            this.descr = descr;
+        }
+    }
 
-			case CREATURE:
-				to = new Creature(g,l,x,y,z,t);
-				to.setData(creatureData[d]);
-				break;
+    public enum CreatureTemplate {
+        C1(0,0,null,0,2,AGGRO,"standing, facing right"),
+        C2(0,0,null,0,2,AGGRO|FLIP,"standing, facing left"),
+        CL1(LEFT,1,null,0,2,AGGRO|MOBILE|FLIP,"move left, facing left"),
+        CR1(RIGHT,1,null,0,2,AGGRO|MOBILE,"move right, facing right"),
+        CU1(UP,1,null,0,2,AGGRO|MOBILE,"move up, facing right"),
+        CU2(UP,1,null,0,2,AGGRO|MOBILE|FLIP,"move up, facing left"),
+        CD1(DOWN,1,null,0,2,AGGRO|MOBILE,"move down, facing right"),
+        CD2(DOWN,1,null,0,2,AGGRO|MOBILE|FLIP,"move down, facing left");
 
-			case PLAYER:
-				to = g.getPlayer();
-				to.setType(l,t);
-				to.transport(x,y,z,false);
-				to.setData(playerData[d]);
-				break;
+        public int action;
+        public int speed;
+        public Effect effect;
+        public int value;
+        public int life;
+        public int stat;
+        public String descr;
 
-			default:return null;
-		}
-		return to;
-	}
+        CreatureTemplate(int action,int speed,Effect effect,int value,int life,int stat,String descr) {
+            this.action = action;
+            this.speed = speed;
+            this.effect = effect;
+            this.value = value;
+            this.life = life;
+            this.stat = stat;
+            this.descr = descr;
+        }
+    }
+
+    public enum ItemTemplate {
+        IG1(0,0,GOLD,1,0,BUFF,"buff: gold"),
+        BL1(0,0,LIFE,1,0,BUFF,"buff: life"),
+        BA1(0,0,AMMO,5,0,BUFF,"buff: ammo"),
+        BP1(0,0,POWER,1,0,BUFF,"buff: power"),
+        BS1(0,0,SPEED,1,0,BUFF,"buff: speed");
+
+        public int action;
+        public int speed;
+        public Effect effect;
+        public int value;
+        public int life;
+        public int stat;
+        public String descr;
+
+        ItemTemplate(int action,int speed,Effect effect,int value,int life,int stat,String descr) {
+            this.action = action;
+            this.speed = speed;
+            this.effect = effect;
+            this.value = value;
+            this.life = life;
+            this.stat = stat;
+            this.descr = descr;
+        }
+    }
+
+    public enum TileTemplate {
+        T1(0,0,null,0,0,SOLID,"solid"),
+        TL1(LEFT,1,null,0,0,SOLID|MOBILE,"solid, move left"),
+        TR1(RIGHT,1,null,0,0,SOLID|MOBILE,"solid, move right"),
+        TU1(UP,1,null,0,0,SOLID|MOBILE,"solid, move up"),
+        TD1(DOWN,1,null,0,0,SOLID|MOBILE,"solid, move down"),
+        TE1(0,0,EXIT,0,0,BUFF,"buff: level exit");
+
+        public int action;
+        public int speed;
+        public Effect effect;
+        public int value;
+        public int life;
+        public int stat;
+        public String descr;
+
+        TileTemplate(int action,int speed,Effect effect,int value,int life,int stat,String descr) {
+            this.action = action;
+            this.speed = speed;
+            this.effect = effect;
+            this.value = value;
+            this.life = life;
+            this.stat = stat;
+            this.descr = descr;
+        }
+    }
+
+    private static LevelFactory instance = null;
+
+    public static LevelFactory getInstance() {
+        if(instance==null) instance = new LevelFactory();
+        return instance;
+    }
+
+    private LevelFactory() {
+    }
+
+    public Level createLevel(JsonObject levels,String levelId) {
+        LadybirdGame game = LadybirdGame.getInstance();
+        JsonValue levelValue = levels.get(levelId);
+        if(levelValue==null) return null;
+        JsonObject levelData = levelValue.asObject();
+        if(levelData==null) return null;
+        Player player = game.getPlayer();
+        Level level = new Level(game,levelData,levelId);
+        createObjects(levelData,level,"players",PLAYER);
+        createObjects(levelData,level,"creatures",CREATURE);
+        createObjects(levelData,level,"items",ITEM);
+        createObjects(levelData,level,"tiles",TILE);
+        player.setCollect(level.getChests());
+        System.gc();
+        return level;
+    }
+
+    public void createObjects(JsonObject levelData,Level level,String id,int group) {
+        JsonValue objects = levelData.get(id);
+        if(objects==null) return;
+        objects.asArray()
+               .values()
+               .stream()
+               .map(JsonValue::asObject)
+               .forEach(o -> createObject(level,group,o));
+    }
+
+    public void createObject(Level level,int group,JsonObject json) {
+        try {
+            String typeName = json.getString("type",null);
+            GameObjectTemplate got = GameObjectTemplate.valueOf(typeName);
+            int x = json.getInt("x",got.x);
+            int y = json.getInt("y",got.y);
+            int z = json.getInt("z",got.z);
+            String data = json.getString("data",got.data);
+            Map<String,String> params = null;
+            JsonValue paramsvalue = json.get("params");
+            if(paramsvalue!=null) {
+                params = new HashMap<>();
+                JsonObject paramsObject = paramsvalue.asObject();
+                for(String key : paramsObject.names()) {
+                    String value = paramsObject.getString(key,null);
+                    if(value!=null) params.put(key,value);
+                }
+            }
+            createObject(level,group,got.index,x,y,z,data,params);
+        } catch(IllegalArgumentException|NullPointerException e) {
+            Gdx.app.error("LevelFactory.createObject","Could not create game object: "+e.getMessage());
+        }
+    }
+
+    public void createObject(Level level,int group,int type,int x,int y,int z,String data,Map<String,String> params) {
+        LadybirdGame main = LadybirdGame.getInstance();
+        GameObject gameObject;
+        if(level==null) level = main.getLevel();
+        switch(group) {
+            case PLAYER:
+                Player player = main.getPlayer();
+                player.setLevel(level);
+                player.setType(type);
+                player.transport(x,y,z,false);
+                player.setData(PlayerTemplate.valueOf(data));
+                gameObject = player;
+                break;
+            case CREATURE:
+                gameObject = new Creature(level,x,y,z,type);
+                gameObject.setData(CreatureTemplate.valueOf(data));
+                break;
+            case ITEM:
+                gameObject = new Item(level,x,y,z,type);
+                gameObject.setData(ItemTemplate.valueOf(data));
+                if(gameObject.effect==GOLD) level.addChest();
+                break;
+            case TILE:
+                gameObject = new Tile(level,x,y,z,type);
+                gameObject.setData(TileTemplate.valueOf(data));
+                break;
+            default:
+                return;
+        }
+        if(params!=null && !params.isEmpty())
+            gameObject.setParams(params);
+        level.addObject(gameObject);
+    }
 }

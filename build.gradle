@@ -27,6 +27,7 @@ allprojects {
         aiVersion = '1.8.2'
         gdxControllersVersion = '2.1.0'
         minervaVersion = '0.1'
+        jsonVersion = '0.9.5'
     }
 
     repositories {
@@ -48,7 +49,7 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
 
-        implementation "net.spirangle.minerva:Minerva:$minervaVersion"
+        implementation "net.spirangle.minerva:minerva-gdx:$minervaVersion"
     }
 }
 
@@ -70,7 +71,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
 
-        implementation "net.spirangle.minerva:Minerva:$minervaVersion"
+        implementation "net.spirangle.minerva:minerva-gdx:$minervaVersion"
     }
 }
 
@@ -86,7 +87,7 @@ project(":ios") {
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-ios"
 
-        implementation "net.spirangle.minerva:Minerva:$minervaVersion"
+        implementation "net.spirangle.minerva:minerva-gdx:$minervaVersion"
     }
 }
 
@@ -104,7 +105,7 @@ project(":html") {
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
         api "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
 
-        implementation "net.spirangle.minerva:Minerva:$minervaVersion"
+        implementation "net.spirangle.minerva:minerva-gdx:$minervaVersion"
     }
 }
 
@@ -115,6 +116,8 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
 
-        implementation "net.spirangle.minerva:Minerva:$minervaVersion"
+        implementation "net.spirangle.minerva:minerva:$minervaVersion"
+        implementation "net.spirangle.minerva:minerva-gdx:$minervaVersion"
+        implementation "com.eclipsesource.minimal-json:minimal-json:$jsonVersion"
     }
 }

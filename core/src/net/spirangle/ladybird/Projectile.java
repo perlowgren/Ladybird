@@ -1,24 +1,36 @@
 package net.spirangle.ladybird;
 
+import java.util.List;
+
 public class Projectile extends GameObject {
-	public Projectile(Main g,Level l,int x,int y,int z,int t) {
-		super(g,l,x,y,z,t);
-	}
 
-	public boolean isProjectile() { return true; }
+    protected GameObject source;
 
-	public void update(Main g) {
-		GameObject to = getCollision();
-		Player player = g.getPlayer();
-		for(; to!=null; to=to.next) {
-			if(to==player) continue;
-			player.hitTarget(to.hit(-1));
-			delete();
-			return;
-		}
+    public Projectile(Level level,int x,int y,int z,int type,GameObject source) {
+        super(level,x,y,z,type);
+        this.source = source;
+    }
 
-		move(flip ? -speed : speed,-jump,true);
-		if(jump>-4) --jump;
-		if(!level.isVisible(space)) delete();
-	}
+    @Override
+    public boolean isProjectile() {
+        return true;
+    }
+
+    @Override
+    public void update() {
+        List<GameObject> targetList = getCollisions();
+        if(targetList!=null) {
+            for(GameObject target : targetList) {
+                if(target==source) continue;
+                if(target.hit(flip? 1-speed : speed-1,-1)) {
+                    source.hitTarget(target);
+                    delete();
+                    return;
+                }
+            }
+        }
+        move(flip? -speed : speed,-jump,true);
+        if(jump>-4) --jump;
+        if(!level.isVisible(space)) delete();
+    }
 }
