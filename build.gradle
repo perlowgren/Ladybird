@@ -116,7 +116,7 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
 
-        implementation "net.spirangle.minerva:minerva:$minervaVersion"
+        implementation "net.spirangle.minerva:minerva-game:$minervaVersion"
         implementation "net.spirangle.minerva:minerva-gdx:$minervaVersion"
         implementation "com.eclipsesource.minimal-json:minimal-json:$jsonVersion"
     }
